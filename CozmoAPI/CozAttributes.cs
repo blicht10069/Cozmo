@@ -22,6 +22,11 @@ namespace CozmoAPI
         {
         }
 
+        public CozFunctionAttribute(CozMessageType messageType)
+            : this((byte)messageType)
+        {
+        }
+
         public CozFunctionAttribute(byte id)
             : this()
         {

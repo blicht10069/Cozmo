@@ -48,6 +48,7 @@
     <Compile Include="CozDataStructures\CozPose3D.cs" />
     <Compile Include="CozDataStructures\CozRect.cs" />
     <Compile Include="Enums\CozAlignmentType.cs" />
+    <Compile Include="Enums\CozMessageType.cs" />
     <Compile Include="Enums\FaceEnrollmentSequenceType.cs" />
     <Compile Include="Enums\FacialExpressionType.cs" />
     <Compile Include="Enums\ImageSendMode.cs" />
@@ -84,6 +85,7 @@
     <Compile Include="MessageObjects\ActionSetLiftHeight.cs" />
     <Compile Include="MessageObjects\ActionTurnInPlace.cs" />
     <Compile Include="Enums\EventEnums.cs" />
+    <Compile Include="MessageObjects\HeadlightControl.cs" />
     <Compile Include="MessageObjects\ImageRequest.cs" />
     <Compile Include="CozDataStructures\CozPathMotionProfile.cs" />
     <Compile Include="Properties\AssemblyInfo.cs" />

@@ -24,6 +24,8 @@ namespace CozmoAPIExamples
         private CozImage mLastImage = null;
         private RobotObservedFace mLastObserved = null;
         private bool mIsCameraOn = false;
+        private bool mIsLightOn = false;
+
         public VMMain()
             : base()
         {
@@ -217,6 +219,10 @@ namespace CozmoAPIExamples
                         Status = "No Block Found";
                      */
                     mConnection.SetLiftHeight(150).WaitHandle.WaitOne();
+                    break;
+                case "ToggleLights":
+                    mIsLightOn = !mIsLightOn;
+                    mConnection.SetHeadlights(mIsLightOn);
                     break;
             }
         }

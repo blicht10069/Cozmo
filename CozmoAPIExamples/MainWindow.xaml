@@ -28,6 +28,7 @@
             <Button Style="{StaticResource ToolBarItem}" Width="100" Content="Flip Block 2" Command="{Binding CommandLink}" CommandParameter="FlipCube2" />
             <Button Style="{StaticResource ToolBarItem}" Width="100" Content="Move To Pt A and back" Command="{Binding CommandLink}" CommandParameter="MoveToASpecificLocation" />
             <Button Style="{StaticResource ToolBarItem}" Width="100" Content="Pick Up Block" Command="{Binding CommandLink}" CommandParameter="PickUpBlock" />
+            <Button Style="{StaticResource ToolBarItem}" Width="100" Content="Toggle Lights" Command="{Binding CommandLink}" CommandParameter="ToggleLights" />
         </WrapPanel>
         <StackPanel Height="20" Background="Silver" DockPanel.Dock="Bottom" >
             <TextBlock VerticalAlignment="Center" Text="{Binding Status}" />

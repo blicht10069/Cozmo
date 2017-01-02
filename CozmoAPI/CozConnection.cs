@@ -119,6 +119,10 @@ namespace CozmoAPI
             return new SingleAction(qsa, result);
         }
 
+        public void SetHeadlights(bool isOn)
+        {
+            SendCommand(new HeadlightControl() { IsLightOn = isOn });
+        }
         public CozAsyncResult Speak(string text, int playEvent = 316, byte voiceStyle = 2, float duration = 1.8f, float pitch = 0f, bool fitToDuration = false)
         {
             return ExecuteAction(
