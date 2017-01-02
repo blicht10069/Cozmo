@@ -1,0 +1,100 @@
+﻿<?xml version="1.0" encoding="utf-8"?>
+<Project ToolsVersion="4.0" DefaultTargets="Build" xmlns="http://schemas.microsoft.com/developer/msbuild/2003">
+  <Import Project="$(MSBuildExtensionsPath)\$(MSBuildToolsVersion)\Microsoft.Common.props" Condition="Exists('$(MSBuildExtensionsPath)\$(MSBuildToolsVersion)\Microsoft.Common.props')" />
+  <PropertyGroup>
+    <Configuration Condition=" '$(Configuration)' == '' ">Debug</Configuration>
+    <Platform Condition=" '$(Platform)' == '' ">AnyCPU</Platform>
+    <ProjectGuid>{4BB8A984-F0CE-4512-83CE-446629C3C6E0}</ProjectGuid>
+    <OutputType>Library</OutputType>
+    <AppDesignerFolder>Properties</AppDesignerFolder>
+    <RootNamespace>CozmoAPI</RootNamespace>
+    <AssemblyName>CozmoAPI</AssemblyName>
+    <TargetFrameworkVersion>v3.5</TargetFrameworkVersion>
+    <FileAlignment>512</FileAlignment>
+    <SccProjectName>SAK</SccProjectName>
+    <SccLocalPath>SAK</SccLocalPath>
+    <SccAuxPath>SAK</SccAuxPath>
+    <SccProvider>SAK</SccProvider>
+  </PropertyGroup>
+  <PropertyGroup Condition=" '$(Configuration)|$(Platform)' == 'Debug|AnyCPU' ">
+    <DebugSymbols>true</DebugSymbols>
+    <DebugType>full</DebugType>
+    <Optimize>false</Optimize>
+    <OutputPath>bin\Debug\</OutputPath>
+    <DefineConstants>DEBUG;TRACE</DefineConstants>
+    <ErrorReport>prompt</ErrorReport>
+    <WarningLevel>4</WarningLevel>
+  </PropertyGroup>
+  <PropertyGroup Condition=" '$(Configuration)|$(Platform)' == 'Release|AnyCPU' ">
+    <DebugType>pdbonly</DebugType>
+    <Optimize>true</Optimize>
+    <OutputPath>bin\Release\</OutputPath>
+    <DefineConstants>TRACE</DefineConstants>
+    <ErrorReport>prompt</ErrorReport>
+    <WarningLevel>4</WarningLevel>
+  </PropertyGroup>
+  <ItemGroup>
+    <Reference Include="System" />
+    <Reference Include="System.Core" />
+    <Reference Include="System.Drawing" />
+    <Reference Include="System.Xml.Linq" />
+    <Reference Include="System.Data.DataSetExtensions" />
+    <Reference Include="System.Data" />
+    <Reference Include="System.Xml" />
+  </ItemGroup>
+  <ItemGroup>
+    <Compile Include="CozAsyncResult.cs" />
+    <Compile Include="CozDataStructures\CozPoint.cs" />
+    <Compile Include="CozDataStructures\CozPose3D.cs" />
+    <Compile Include="CozDataStructures\CozRect.cs" />
+    <Compile Include="Enums\CozAlignmentType.cs" />
+    <Compile Include="Enums\FaceEnrollmentSequenceType.cs" />
+    <Compile Include="Enums\FacialExpressionType.cs" />
+    <Compile Include="Enums\ImageSendMode.cs" />
+    <Compile Include="Enums\ObjectFamilyTypes.cs" />
+    <Compile Include="EventObjects\DebugString.cs" />
+    <Compile Include="EventObjects\IDebugInformation.cs" />
+    <Compile Include="EventObjects\ImageChunk.cs" />
+    <Compile Include="EventObjects\ObjectPowerLevel.cs" />
+    <Compile Include="EventObjects\RobotCompletedAction.cs" />
+    <Compile Include="EventObjects\RobotObservedFace.cs" />
+    <Compile Include="EventObjects\RobotObservedObject.cs" />
+    <Compile Include="ImageStreamManager.cs" />
+    <Compile Include="MessageObjects\AbortAction.cs" />
+    <Compile Include="MessageObjects\ActionAlignWithObject.cs" />
+    <Compile Include="MessageObjects\ActionCalibrateMotors.cs" />
+    <Compile Include="MessageObjects\ActionDisplayFaceImage.cs" />
+    <Compile Include="MessageObjects\ActionDriveOffChargerContacts.cs" />
+    <Compile Include="MessageObjects\ActionDriveStraight.cs" />
+    <Compile Include="Enums\ActionEnums.cs" />
+    <Compile Include="MessageObjects\ActionEnrollNamedFace.cs" />
+    <Compile Include="MessageObjects\ActionFlipBlock.cs" />
+    <Compile Include="MessageObjects\ActionGotoObject.cs" />
+    <Compile Include="MessageObjects\ActionGotoPose.cs" />
+    <Compile Include="MessageObjects\ActionMountCharger.cs" />
+    <Compile Include="MessageObjects\ActionPanAndTilt.cs" />
+    <Compile Include="MessageObjects\ActionPickupObject.cs" />
+    <Compile Include="MessageObjects\ActionSayText.cs" />
+    <Compile Include="CozAttributes.cs" />
+    <Compile Include="CozConnection.cs" />
+    <Compile Include="CozFunctionObject.cs" />
+    <Compile Include="MessageObjects\ActionSetHeadAngle.cs" />
+    <Compile Include="MessageObjects\ActionSetLiftHeight.cs" />
+    <Compile Include="MessageObjects\ActionTurnInPlace.cs" />
+    <Compile Include="Enums\EventEnums.cs" />
+    <Compile Include="MessageObjects\ImageRequest.cs" />
+    <Compile Include="CozDataStructures\CozPathMotionProfile.cs" />
+    <Compile Include="Properties\AssemblyInfo.cs" />
+    <Compile Include="MessageObjects\QueueSingleAction.cs" />
+    <Compile Include="RobotEventArgs.cs" />
+    <Compile Include="Utilities.cs" />
+  </ItemGroup>
+  <Import Project="$(MSBuildToolsPath)\Microsoft.CSharp.targets" />
+  <!-- To modify your build process, add your task inside one of the targets below and uncomment it. 
+       Other similar extension points exist, see Microsoft.Common.targets.
+  <Target Name="BeforeBuild">
+  </Target>
+  <Target Name="AfterBuild">
+  </Target>
+  -->
+</Project>

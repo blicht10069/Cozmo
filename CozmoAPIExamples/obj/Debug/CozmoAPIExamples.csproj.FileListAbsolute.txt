@@ -1,0 +1,16 @@
+e:\Programming\DotNet2010\Cozmo\CozmoAPIExamples\bin\Debug\CozmoAPIExamples.exe
+e:\Programming\DotNet2010\Cozmo\CozmoAPIExamples\bin\Debug\CozmoAPIExamples.pdb
+e:\Programming\DotNet2010\Cozmo\CozmoAPIExamples\bin\Debug\CozmoAPI.dll
+e:\Programming\DotNet2010\Cozmo\CozmoAPIExamples\bin\Debug\CozmoAPI.pdb
+e:\Programming\DotNet2010\Cozmo\CozmoAPIExamples\obj\Debug\CozmoAPIExamples.csprojResolveAssemblyReference.cache
+e:\Programming\DotNet2010\Cozmo\CozmoAPIExamples\obj\Debug\MainWindow.baml
+e:\Programming\DotNet2010\Cozmo\CozmoAPIExamples\obj\Debug\MainWindow.g.cs
+e:\Programming\DotNet2010\Cozmo\CozmoAPIExamples\obj\Debug\App.g.cs
+e:\Programming\DotNet2010\Cozmo\CozmoAPIExamples\obj\Debug\CozmoAPIExamples_MarkupCompile.cache
+e:\Programming\DotNet2010\Cozmo\CozmoAPIExamples\obj\Debug\CozmoAPIExamples.g.resources
+e:\Programming\DotNet2010\Cozmo\CozmoAPIExamples\obj\Debug\CozmoAPIExamples.Properties.Resources.resources
+e:\Programming\DotNet2010\Cozmo\CozmoAPIExamples\obj\Debug\CozmoAPIExamples.csproj.GenerateResource.Cache
+e:\Programming\DotNet2010\Cozmo\CozmoAPIExamples\obj\Debug\CozmoAPIExamples.exe
+e:\Programming\DotNet2010\Cozmo\CozmoAPIExamples\obj\Debug\CozmoAPIExamples.pdb
+e:\Programming\DotNet2010\Cozmo\CozmoAPIExamples\obj\Debug\GeneratedInternalTypeHelper.g.cs
+e:\Programming\DotNet2010\Cozmo\CozmoAPIExamples\obj\Debug\CozmoAPIExamples_MarkupCompile.lref
