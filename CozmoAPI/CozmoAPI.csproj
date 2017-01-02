@@ -74,6 +74,8 @@
     <Compile Include="MessageObjects\ActionMountCharger.cs" />
     <Compile Include="MessageObjects\ActionPanAndTilt.cs" />
     <Compile Include="MessageObjects\ActionPickupObject.cs" />
+    <Compile Include="MessageObjects\ActionPlaceObjectOnGround.cs" />
+    <Compile Include="MessageObjects\ActionPlaceObjectOnGroundHere.cs" />
     <Compile Include="MessageObjects\ActionSayText.cs" />
     <Compile Include="CozAttributes.cs" />
     <Compile Include="CozConnection.cs" />

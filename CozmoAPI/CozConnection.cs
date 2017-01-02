@@ -214,6 +214,16 @@ namespace CozmoAPI
             return ExecuteAction(action);
         }
 
+        public CozAsyncResult DropObject(float x, float y)
+        {
+            return ExecuteAction(new ActionPlaceObjectOnGround() { X = x, Y = y });
+        }
+
+        public CozAsyncResult DropObjectHere()
+        {
+            return ExecuteAction(new ActionPlaceObjectOnGroundHere());
+        }
+
         public CozAsyncResult PanAndTilt(float bodyPan = 0f, float headTilt = 0f, bool isPanAbsolute = false, bool isTiltAbsolute = false)
         {
             return ExecuteAction(new ActionPanAndTilt() { BodyPan = bodyPan, HeadTilt = headTilt, IsPanAbsolute = isPanAbsolute, IsTiltAbsolute = isTiltAbsolute });
