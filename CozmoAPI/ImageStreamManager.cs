@@ -67,6 +67,18 @@ namespace CozmoAPI
             }
         }
 
+        public int Width
+        {
+            get;
+            private set;
+        }
+
+        public int Height
+        {
+            get;
+            private set;
+        }
+
         public bool IsGoodImage
         {
             get;
@@ -82,8 +94,14 @@ namespace CozmoAPI
         public Bitmap CreateBitmap()
         {
             MemoryStream ms = new MemoryStream(Image);
-            Bitmap bmp = (Bitmap)Bitmap.FromStream(ms);
-            return new Bitmap(bmp);
+            Bitmap bmp = (Bitmap)Bitmap.FromStream(ms);            
+            bmp = new Bitmap(bmp);            
+            Bitmap ret = new Bitmap(Width, Height);
+            using (Graphics g = Graphics.FromImage(ret))
+            {
+                g.DrawImage(bmp, new Rectangle(0, 0, Width, Height), new Rectangle(0,0,Width,Height), GraphicsUnit.Pixel);
+            }
+            return ret;
         }
 
         public Bitmap OverlayObservedFaceInformation(RobotObservedFace faceInfo)
@@ -125,6 +143,7 @@ namespace CozmoAPI
                     MemoryStream ms = new MemoryStream();
                     foreach (ImageChunk ic in mChunks)
                         ms.Write(ic.Data, 0, ic.Data.Length);
+                    ms.Flush();
                     byte[] rawOldFormat = ms.ToArray();
                     mImage = new byte[HEADER.Length + rawOldFormat.Length*2];
                     for (int i = 0; i < HEADER.Length; i++)
@@ -154,6 +173,8 @@ namespace CozmoAPI
                     byte[] ret = new byte[offset+1];
                     Array.Copy(mImage, ret, ret.Length);
                     mImage = ret;
+                    Width = width;
+                    Height = height;
                 }
                 return mImage;
             }

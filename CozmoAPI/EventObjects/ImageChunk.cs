@@ -103,11 +103,11 @@ namespace CozmoAPI.EventObjects
         public static readonly CozImageResolution[] ResolutionModes = new CozImageResolution[]
         {
             new CozImageResolution(16, 16),
-            new CozImageResolution(40, 60),
-            new CozImageResolution(80, 120),
-            new CozImageResolution(160, 240),
-            new CozImageResolution(320, 296),
-            new CozImageResolution(400, 480),
+            new CozImageResolution(40, 30),
+            new CozImageResolution(80, 60),
+            new CozImageResolution(160, 120),
+            new CozImageResolution(320, 240),
+            new CozImageResolution(400, 296),
             new CozImageResolution(640, 480),
             new CozImageResolution(800, 600),
             new CozImageResolution(1024, 768),
