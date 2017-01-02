@@ -187,7 +187,7 @@ namespace CozmoAPIExamples
                     break;
                 case "DisplayALine":                   
                     for (int i = 0; i < 20; i++)
-                        mConnection.DisplayText(String.Format("{0:HH:mm:ss}", DateTime.Now)).WaitHandle.WaitOne();
+                        mConnection.DisplayTextCentered(String.Format("{0:HH:mm:ss}", DateTime.Now)).WaitHandle.WaitOne();
                     break;
                 case "FlipCube2":
                     mConnection.Speak("Preparing").WaitHandle.WaitOne();

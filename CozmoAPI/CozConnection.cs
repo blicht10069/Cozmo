@@ -257,6 +257,21 @@ namespace CozmoAPI
             return ExecuteAction(img);
         }
 
+        public CozAsyncResult DisplayTextCentered(string text, int durationInMS = 1000, float fontSize = 16f, string fontName = "Lucida Console")
+        {
+            ActionDisplayFaceImage img = new ActionDisplayFaceImage();
+            img.DurationMS = durationInMS;
+            Bitmap bmp = ActionDisplayFaceImage.CreateBitmap();
+            using (Graphics g = Graphics.FromImage(bmp))
+            using (StringFormat fmt = new StringFormat())
+            {
+                fmt.Alignment = StringAlignment.Center;
+                fmt.LineAlignment = StringAlignment.Center;                                                
+                g.DrawString(text, new Font(fontName, fontSize), Brushes.White, new Rectangle(0,0,128,64), fmt);
+            }
+            img.FromImage(bmp);
+            return ExecuteAction(img);
+        }
         public CozAsyncResult MountCharger()
         {
             return ExecuteAction(
