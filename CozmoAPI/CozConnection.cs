@@ -20,7 +20,7 @@ namespace CozmoAPI
         private static int mIdTagGenerator = 10000;
 
         private string mAdbPath;
-        private string mAdpExe;
+        private string mAdbExe;
         private int mCozmoSDKPort;
         private Socket mSocket;
         private ManualResetEvent mReset = new ManualResetEvent(false);
@@ -35,7 +35,9 @@ namespace CozmoAPI
             mImageStreamManager = new ImageStreamManager();
             Output = TextWriter.Null;
             mAdbPath = adbLocation;
-            mAdpExe = mAdbPath + "adb.exe";
+            mAdbExe = mAdbPath + "adb.exe";
+            if (!File.Exists(mAdbExe))
+                throw new ArgumentException("Could not find adb.exe on the path supplied: " + adbLocation);
             mCozmoSDKPort = cozmoSDKPort;
             mReader = new Thread(RunReader);
             mReader.IsBackground = true;
@@ -60,6 +62,30 @@ namespace CozmoAPI
             set;
         }
 
+        private string GetDeviceName()
+        {
+            string ret = null;
+            ProcessStartInfo info = new ProcessStartInfo(mAdbExe);
+            info.Arguments = "devices";
+            info.RedirectStandardOutput = true;
+            info.UseShellExecute = false;
+            Process p = Process.Start(info);
+            using (StreamReader r = new StreamReader(p.StandardOutput.BaseStream))
+            {
+                r.ReadLine();
+                string line = r.ReadLine();
+                while (line != null)
+                {
+                    if (line.Trim().EndsWith("device"))
+                    {
+                        ret = line.Substring(0, 8);
+                        break;
+                    }
+                }
+            }
+            return ret;
+        }
+
         public void Disconnect()
         {
             ExecAdb("forward --remove tcp:{0}", mCozmoSDKPort);
@@ -73,7 +99,10 @@ namespace CozmoAPI
 
         public void Connect()
         {
-            ExecAdb("forward tcp:{0} tcp:{0}", mCozmoSDKPort);
+            string serialNumber = GetDeviceName();
+            if (String.IsNullOrEmpty(serialNumber))
+                throw new Exception("Could not find a connected device to bridge with adb");
+            ExecAdb("-s {1} forward tcp:{0} tcp:{0}", mCozmoSDKPort, serialNumber);
             mSocket = new Socket(AddressFamily.InterNetwork, SocketType.Stream, ProtocolType.Tcp);
             IPEndPoint ep = new IPEndPoint(IPAddress.Loopback, mCozmoSDKPort);
             mSocket.Connect(ep);
@@ -294,7 +323,7 @@ namespace CozmoAPI
 
         private void ExecAdb(string parameters, params object[] data)
         {
-            ProcessStartInfo info = new ProcessStartInfo(mAdpExe);
+            ProcessStartInfo info = new ProcessStartInfo(mAdbExe);
             info.Arguments = String.Format(parameters, data);
             info.WindowStyle = ProcessWindowStyle.Hidden;
             Process p = Process.Start(info);
