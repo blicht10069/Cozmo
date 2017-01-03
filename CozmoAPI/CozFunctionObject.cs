@@ -164,9 +164,10 @@ namespace CozmoAPI
                         else
                             size = r.ReadInt32();
                         Array array = Array.CreateInstance(param.Parameter.ArrayOfSpecialType, size);
+                        Type arrayElementType = param.Parameter.OverrideType == null ? param.Parameter.ArrayOfSpecialType : param.Parameter.OverrideType;
                         for (int i = 0; i < size; i++)
                         {
-                            CozFunctionObject fo = CozFunctionObjectCollection.Default[param.Parameter.OverrideType];
+                            CozFunctionObject fo = CozFunctionObjectCollection.Default[arrayElementType];
                             if (fo != null)
                                 array.SetValue(fo.ReadFromStream(stream), i);
                         }
@@ -255,6 +256,17 @@ namespace CozmoAPI
                     byte[] buf = Encoding.ASCII.GetBytes(sval);
                     stream.Write(buf, 0, buf.Length);
                     stream.Flush();
+                }
+                else if (pt != typeof(byte[]) && pt.IsArray)
+                {
+                    Array array = (Array)val;
+                    int length = array.GetLength(0);
+                    for (int i = 0; i < length; i++)
+                    {
+                        object arrayElement = array.GetValue(i);
+                        byte[] buf = CozFunctionObjectCollection.Default.BuildMessage(arrayElement);
+                        stream.Write(buf, 0, buf.Length);
+                    }
                 }
                 else
                 {

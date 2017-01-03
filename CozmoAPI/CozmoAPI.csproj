@@ -61,6 +61,7 @@
     <Compile Include="EventObjects\RobotObservedFace.cs" />
     <Compile Include="EventObjects\RobotObservedObject.cs" />
     <Compile Include="ImageStreamManager.cs" />
+    <Compile Include="Int32Container.cs" />
     <Compile Include="MessageObjects\AbortAction.cs" />
     <Compile Include="MessageObjects\ActionAlignWithObject.cs" />
     <Compile Include="MessageObjects\ActionCalibrateMotors.cs" />
@@ -88,6 +89,7 @@
     <Compile Include="MessageObjects\HeadlightControl.cs" />
     <Compile Include="MessageObjects\ImageRequest.cs" />
     <Compile Include="CozDataStructures\CozPathMotionProfile.cs" />
+    <Compile Include="MessageObjects\SetBackpackLED.cs" />
     <Compile Include="Properties\AssemblyInfo.cs" />
     <Compile Include="MessageObjects\QueueSingleAction.cs" />
     <Compile Include="RobotEventArgs.cs" />

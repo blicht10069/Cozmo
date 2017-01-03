@@ -220,7 +220,17 @@ namespace CozmoAPIExamples
                     break;
                 case "ToggleLights":
                     mIsLightOn = !mIsLightOn;
+                    SetBackpackLED led = new SetBackpackLED();
+                    led.SetLightState(3, mIsLightOn ? Color.Blue : Color.Black);
+                    led.SetLightState(0, mIsLightOn ? Color.Red: Color.Black);
+                    led.SetLightState(1, mIsLightOn ? Color.Green : Color.Black);
+                    led.SetLightState(2, mIsLightOn ? Color.White : Color.Black);
+                    led.SetLightState(4, mIsLightOn ? Color.Purple : Color.Black);
+                    mConnection.ExecuteCommand(led);
+                    /*
+                    mIsLightOn = !mIsLightOn;
                     mConnection.SetHeadlights(mIsLightOn);
+                     */
                     break;
             }
         }

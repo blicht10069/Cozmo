@@ -121,7 +121,7 @@ namespace CozmoAPI
 
         public void SetHeadlights(bool isOn)
         {
-            SendCommand(new HeadlightControl() { IsLightOn = isOn });
+            ExecuteCommand(new HeadlightControl() { IsLightOn = isOn });
         }
         public CozAsyncResult Speak(string text, int playEvent = 316, byte voiceStyle = 2, float duration = 1.8f, float pitch = 0f, bool fitToDuration = false)
         {
@@ -305,23 +305,23 @@ namespace CozmoAPI
         public void AbortByIdTag(int idTag)
         {
             AbortAction aa = new AbortAction() { IdTag = idTag };
-            SendCommand(aa);
+            ExecuteCommand(aa);
         }
 
         public void RequestImage(ImageSendMode mode = ImageSendMode.SingleShot)
         {
-            SendCommand(new ImageRequest() { Mode = mode });
+            ExecuteCommand(new ImageRequest() { Mode = mode });
         }
 
         public CozAsyncResult ExecuteAction(IRobotActionUnion action)
         {
             SingleAction ret = CreateQueueSingleAction();
             ret.QueueSingleAction.Action = action;
-            SendCommand(ret.QueueSingleAction);
+            ExecuteCommand(ret.QueueSingleAction);
             return ret.Result;
         }
 
-        public void SendCommand(object messageSource)
+        public void ExecuteCommand(object messageSource)
         {
             byte[] message = CozFunctionObjectCollection.Default.BuildMessage(messageSource);
             Send(message);
