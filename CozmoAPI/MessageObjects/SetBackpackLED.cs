@@ -61,18 +61,33 @@ namespace CozmoAPI.MessageObjects
             set;
         }
 
+        public ILightIndex SetLightState(BackpackLightID light, Color color)
+        {
+            return SetLightState((int)light, color);
+        }
+
+        public void TurnLightOff(BackpackLightID light)
+        {
+            TurnLightOff((int)light);
+        }
+
         public ILightIndex SetLightState(int lightIndex, Color color)
         {
             int c = color.R * (256 * 256 * 256) + color.G * (256 * 256 ) + color.B * 256 + 255;
             ILightIndex light = this[lightIndex];
             light.OnColor =c;
             light.OffColor = c;
-            light.OnPeriodMS = 1000;
-            light.OffPeriodMS = 1000;
+            light.OnPeriodMS = 0;
+            light.OffPeriodMS = 0;
             light.TransitionOnPeriodMS = 0;
             light.TransitionOffPeriodMS = 0;
             light.Offset = 0;
             return light;
+        }
+       
+        public void TurnLightOff(int lightIndex)
+        {
+            SetLightState(lightIndex, Color.Black);
         }
 
         private class LightIndex : ILightIndex

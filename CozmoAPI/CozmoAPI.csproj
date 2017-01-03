@@ -47,6 +47,7 @@
     <Compile Include="CozDataStructures\CozPoint.cs" />
     <Compile Include="CozDataStructures\CozPose3D.cs" />
     <Compile Include="CozDataStructures\CozRect.cs" />
+    <Compile Include="Enums\BackpackLightID.cs" />
     <Compile Include="Enums\CozAlignmentType.cs" />
     <Compile Include="Enums\CozMessageType.cs" />
     <Compile Include="Enums\FaceEnrollmentSequenceType.cs" />
