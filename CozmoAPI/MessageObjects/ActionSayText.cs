@@ -2,16 +2,22 @@
 using System.Collections.Generic;
 using System.Linq;
 using System.Text;
+using CozmoAPI.Enums;
 
 namespace CozmoAPI.MessageObjects
 {
     [CozFunction(24)]
     public class ActionSayText : IRobotActionUnion
     {
+        [CozParameter(1)]
+        private int mPlayEvent;
+        [CozParameter(2)]
+        private byte mVoiceStyle;
+
         public ActionSayText()
         {
-            PlayEvent = 316;
-            VoiceStyle = 2;
+            PlayEvent = CozAnimationTriggerType.Count;
+            VoiceStyle = CozVoiceStyle.CozmoProcessing_Sentence;
             DurationScalar = 1.8f;
             VoicePitch = 0f;
             FitToDuration = false;
@@ -23,19 +29,17 @@ namespace CozmoAPI.MessageObjects
             get;
             set;
         }
-
-        [CozParameter(1)]
-        public int PlayEvent
+        
+        public CozAnimationTriggerType PlayEvent
         {
-            get;
-            set;
+            get { return (CozAnimationTriggerType)mPlayEvent; }
+            set { mPlayEvent = (int)value; }
         }
-
-        [CozParameter(2)]
-        public byte VoiceStyle
+        
+        public CozVoiceStyle VoiceStyle
         {
-            get;
-            set;
+            get { return (CozVoiceStyle)mVoiceStyle; }
+            set { mVoiceStyle = (byte)value; }
         }
 
         [CozParameter(3)]

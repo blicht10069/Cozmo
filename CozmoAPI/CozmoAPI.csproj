@@ -47,6 +47,7 @@
     <Compile Include="CozDataStructures\CozPoint.cs" />
     <Compile Include="CozDataStructures\CozPose3D.cs" />
     <Compile Include="CozDataStructures\CozRect.cs" />
+    <Compile Include="Enums\CozAnimationTriggerType.cs" />
     <Compile Include="Enums\BackpackLightID.cs" />
     <Compile Include="Enums\CozAlignmentType.cs" />
     <Compile Include="Enums\CozMessageType.cs" />
@@ -54,6 +55,7 @@
     <Compile Include="Enums\FacialExpressionType.cs" />
     <Compile Include="Enums\ImageSendMode.cs" />
     <Compile Include="Enums\ObjectFamilyTypes.cs" />
+    <Compile Include="Enums\CozVoiceStyle.cs" />
     <Compile Include="EventObjects\DebugString.cs" />
     <Compile Include="EventObjects\IDebugInformation.cs" />
     <Compile Include="EventObjects\ImageChunk.cs" />

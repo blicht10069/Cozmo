@@ -131,7 +131,7 @@ namespace CozmoAPI
             ExecuteCommand(mBackpackLedState);
         }
 
-        public CozAsyncResult Speak(string text, int playEvent = 316, byte voiceStyle = 2, float duration = 1.8f, float pitch = 0f, bool fitToDuration = false)
+        public CozAsyncResult Speak(string text, CozAnimationTriggerType playEvent = CozAnimationTriggerType.Count, CozVoiceStyle voiceStyle = CozVoiceStyle.CozmoProcessing_Sentence, float duration = 1.8f, float pitch = 0f, bool fitToDuration = false)
         {
             return ExecuteAction(
                 new ActionSayText()
