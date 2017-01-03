@@ -28,6 +28,7 @@ namespace CozmoAPI
         private Action<RobotEventArgs> mRobotEvent;
         private Action<ImageEventArgs> mImageEvent;
         private ImageStreamManager mImageStreamManager;
+        private SetBackpackLED mBackpackLedState = new SetBackpackLED();
 
         public CozConnection(string adbLocation = @"E:\cozmo\platform-tools\", int cozmoSDKPort = 5106)
         {
@@ -123,6 +124,13 @@ namespace CozmoAPI
         {
             ExecuteCommand(new HeadlightControl() { IsLightOn = isOn });
         }
+
+        public void SetBackpackLightState(BackpackLightID light, Color color)
+        {
+            mBackpackLedState.SetLightState(light, color);
+            ExecuteCommand(mBackpackLedState);
+        }
+
         public CozAsyncResult Speak(string text, int playEvent = 316, byte voiceStyle = 2, float duration = 1.8f, float pitch = 0f, bool fitToDuration = false)
         {
             return ExecuteAction(
