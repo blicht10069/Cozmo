@@ -38,7 +38,15 @@ namespace CozmoAPI
                 IsComplete = true;
                 RobotCompletedAction rca = e.Data as RobotCompletedAction;
                 if (rca != null) ResultCode = rca.Result;
+                if (Completed != null)
+                    Completed(new AsyncCompleteArgs(e, rca, false));
             }
+        }
+
+        public Action<AsyncCompleteArgs> Completed
+        {
+            get;
+            set;
         }
 
         public byte ResultCode
@@ -77,6 +85,34 @@ namespace CozmoAPI
         public WaitHandle WaitHandle
         {
             get { return mReset; }
+        }
+    }
+
+    public class AsyncCompleteArgs : EventArgs
+    {
+        public AsyncCompleteArgs(RobotEventArgs e, RobotCompletedAction rca, bool wasAborted)
+        {
+            EventArgs = e;
+            CompletedAction = rca;
+            WasAborted = wasAborted;
+        }
+
+        public RobotCompletedAction CompletedAction
+        {
+            get;
+            private set;
+        }
+
+        public RobotEventArgs EventArgs
+        {
+            get;
+            private set;
+        }
+
+        public bool WasAborted
+        {
+            get;
+            private set;
         }
     }
 }

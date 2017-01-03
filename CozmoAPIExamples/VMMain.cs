@@ -158,6 +158,18 @@ namespace CozmoAPIExamples
                         mConnection.Turn(-90).Wait();
                     }
                     break;
+                case "Box2":
+                    mConnection.Move(100, 200).Completed=
+                        o1 => mConnection.Turn(90).Completed =
+                            o2 => mConnection.Move(100, 200).Completed = 
+                                o3=> mConnection.Turn(90).Completed = 
+                                    o4=> mConnection.Move(100,200).Completed = 
+                                        o5=> mConnection.Turn(90).Completed = 
+                                            o6 => mConnection.Move(100,200).Completed =
+                                                o7=>mConnection.Turn(90).Completed =
+                                                    o8 => mConnection.Move(100,200);
+                    Status = "Box Queued Up";
+                    break;
                 case "MountCharger":
                     mConnection.MountCharger();
                     break;

@@ -20,6 +20,7 @@
             <Button Style="{StaticResource ToolBarItem}" Width="100" Content="Move Forward" Command="{Binding CommandLink}" CommandParameter="MoveForward" />
             <Button Style="{StaticResource ToolBarItem}" Width="100" Content="Turn Right" Command="{Binding CommandLink}" CommandParameter="TurnRight" />
             <Button Style="{StaticResource ToolBarItem}" Width="100" Content="Make a Box" Command="{Binding CommandLink}" CommandParameter="Box" />
+            <Button Style="{StaticResource ToolBarItem}" Width="100" Content="Make a Box (async)" Command="{Binding CommandLink}" CommandParameter="Box2" />
             <Button Style="{StaticResource ToolBarItem}" Width="100" Content="Charge" Command="{Binding CommandLink}" CommandParameter="MountCharger" />
             <Button Style="{StaticResource ToolBarItem}" Width="100" Content="Nod" Command="{Binding CommandLink}" CommandParameter="Nod" />
             <Button Style="{StaticResource ToolBarItem}" Width="100" Content="Take Picture" Command="{Binding CommandLink}" CommandParameter="ImageRequest" />
