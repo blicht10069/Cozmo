@@ -101,9 +101,7 @@ namespace CozmoAPIExamples
                     break;
                 case CozEventType.RobotObservedFace:
                     RobotObservedFace rof = (RobotObservedFace)e.Data;
-                    Console.WriteLine("Observed Face On Robot {0} -- {1}", rof.RobotID, rof.RightEye.Length);
                     mLastObserved = rof;
-                    //Console.WriteLine("Image ID {0}, Chunk Number {1}, Count {2}", rof.O);
                     break;                
             }
         }
@@ -137,7 +135,7 @@ namespace CozmoAPIExamples
                     float pitch = 0f;
                     foreach (string part in parts)
                     {
-                        mConnection.Speak(part, pitch: pitch).WaitHandle.WaitOne();
+                        mConnection.Speak(part, pitch: pitch).Wait();
                         pitch += 0.1f;
                     }
                     break;
@@ -147,17 +145,17 @@ namespace CozmoAPIExamples
                     Thread.Sleep(5000);
                     Status = "Aborting...";
                     mConnection.AbortCommand(wait.Command);
-                    wait.WaitHandle.WaitOne();
+                    wait.Wait();
                     Status = "Done";
                     break;
                 case "TurnRight":
-                    mConnection.Turn(90).WaitHandle.WaitOne();
+                    mConnection.Turn(90).Wait();
                     break;
                 case "Box":
                     for (int i = 0; i < 4; i++)
                     {
-                        mConnection.Move(100, 200).WaitHandle.WaitOne();
-                        mConnection.Turn(-90).WaitHandle.WaitOne();
+                        mConnection.Move(100, 200).Wait();
+                        mConnection.Turn(-90).Wait();
                     }
                     break;
                 case "MountCharger":
@@ -172,37 +170,37 @@ namespace CozmoAPIExamples
                     Status = "Getting Images";
                     break;
                 case "Nod":
-                    mConnection.SetHeadAngle(Utilities.ToRadians(20), durationInSeconds: 0.2f).WaitHandle.WaitOne();
+                    mConnection.SetHeadAngle(Utilities.ToRadians(20), durationInSeconds: 0.2f).Wait();
                     Thread.Sleep(500);
                     for (int i = 0; i < 5; i++)
                     {
-                        mConnection.SetHeadAngle(Utilities.ToRadians(30), durationInSeconds: 0.1f).WaitHandle.WaitOne();
-                        mConnection.SetHeadAngle(Utilities.ToRadians(10), durationInSeconds: 0.1f).WaitHandle.WaitOne();
+                        mConnection.SetHeadAngle(Utilities.ToRadians(30), durationInSeconds: 0.1f).Wait();
+                        mConnection.SetHeadAngle(Utilities.ToRadians(10), durationInSeconds: 0.1f).Wait();
                     }
                     Thread.Sleep(500);
-                    mConnection.SetHeadAngle(Utilities.ToRadians(-20), durationInSeconds: 0.5f).WaitHandle.WaitOne();
+                    mConnection.SetHeadAngle(Utilities.ToRadians(-20), durationInSeconds: 0.5f).Wait();
                     break;
                 case "Calibrate":
                     CozAsyncResult ar = mConnection.CalibrateMotors(true, true);
-                    ar.WaitHandle.WaitOne();
+                    ar.Wait();
                     Status = String.Format("Motors Calibrated (Code: {0})", ar.ResultCode);
                     break;
                 case "DisplayALine":                   
                     for (int i = 0; i < 20; i++)
-                        mConnection.DisplayTextCentered(String.Format("{0:HH:mm:ss}", DateTime.Now)).WaitHandle.WaitOne();
+                        mConnection.DisplayTextCentered(String.Format("{0:HH:mm:ss}", DateTime.Now)).Wait();
                     break;
                 case "FlipCube2":
-                    mConnection.Speak("Preparing").WaitHandle.WaitOne();
-                    mConnection.SetHeadAngle(Utilities.ToRadians(5)).WaitHandle.WaitOne();
-                    mConnection.Speak("I see the block").WaitHandle.WaitOne();
-                    mConnection.MoveToObject(mBlockID).WaitHandle.WaitOne();
-                    mConnection.Speak("The block will be flipped").WaitHandle.WaitOne();
-                    mConnection.FlipBlock(mBlockID).WaitHandle.WaitOne();
+                    mConnection.Speak("Preparing").Wait();
+                    mConnection.SetHeadAngle(Utilities.ToRadians(5)).Wait();
+                    mConnection.Speak("I see the block").Wait();
+                    mConnection.MoveToObject(mBlockID).Wait();
+                    mConnection.Speak("The block will be flipped").Wait();
+                    mConnection.FlipBlock(mBlockID).Wait();
                     Status = "Flipped";
                     break;
                 case "MoveToASpecificLocation":
-                    mConnection.MoveToPosition(Utilities.FeetToMM(1), Utilities.FeetToMM(1), Utilities.ToRadians(180)).WaitHandle.WaitOne();
-                    mConnection.MoveToPosition(Utilities.FeetToMM(0), Utilities.FeetToMM(0), Utilities.ToRadians(0)).WaitHandle.WaitOne();
+                    mConnection.MoveToPosition(Utilities.FeetToMM(1), Utilities.FeetToMM(1), Utilities.ToRadians(180)).Wait();
+                    mConnection.MoveToPosition(Utilities.FeetToMM(0), Utilities.FeetToMM(0), Utilities.ToRadians(0)).Wait();
                     break;
                 case "PickUpBlock":
                     mConnection.Output = Console.Out;
@@ -210,15 +208,15 @@ namespace CozmoAPIExamples
                     int blockId = mBlockID;
                     if (mBlockID > 0)
                     {
-                        mConnection.CalibrateMotors(true, true).WaitHandle.WaitOne();
-                        mConnection.SetHeadAngle(Utilities.ToRadians(10)).WaitHandle.WaitOne();
-                        mConnection.MoveToObject(blockId, 0f).WaitHandle.WaitOne();
-                        mConnection.PickupObject(blockId).WaitHandle.WaitOne();
+                        mConnection.CalibrateMotors(true, true).Wait();
+                        mConnection.SetHeadAngle(Utilities.ToRadians(10)).Wait();
+                        mConnection.MoveToObject(blockId, 0f).Wait();
+                        mConnection.PickupObject(blockId).Wait();
                     }
                     else
                         Status = "No Block Found";
                      */
-                    mConnection.SetLiftHeight(150).WaitHandle.WaitOne();
+                    mConnection.SetLiftHeight(150).Wait();
                     break;
                 case "ToggleLights":
                     mIsLightOn = !mIsLightOn;

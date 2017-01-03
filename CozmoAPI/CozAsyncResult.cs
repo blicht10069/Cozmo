@@ -59,6 +59,21 @@ namespace CozmoAPI
             protected set;
         }
 
+        public bool Wait(TimeSpan ts)
+        {
+            return WaitHandle.WaitOne(ts);
+        }
+
+        public bool Wait(int timeoutMS)
+        {
+            return WaitHandle.WaitOne(timeoutMS);
+        }
+
+        public bool Wait()
+        {
+            return WaitHandle.WaitOne();
+        }
+
         public WaitHandle WaitHandle
         {
             get { return mReset; }
