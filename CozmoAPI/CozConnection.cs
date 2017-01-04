@@ -82,6 +82,7 @@ namespace CozmoAPI
                         ret = line.Substring(0, 8);
                         break;
                     }
+                    line = r.ReadLine();
                 }
             }
             return ret;
