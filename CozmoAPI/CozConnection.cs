@@ -104,11 +104,12 @@ namespace CozmoAPI
             if (String.IsNullOrEmpty(serialNumber))
                 throw new Exception("Could not find a connected device to bridge with adb");
             ExecAdb("-s {1} forward tcp:{0} tcp:{0}", mCozmoSDKPort, serialNumber);
-            mSocket = new Socket(AddressFamily.InterNetwork, SocketType.Stream, ProtocolType.Tcp);
+            mSocket = new Socket(AddressFamily.InterNetwork, SocketType.Stream, ProtocolType.Tcp);             
             IPEndPoint ep = new IPEndPoint(IPAddress.Loopback, mCozmoSDKPort);
             mSocket.Connect(ep);
             mReset.Set();
         }
+
 
         protected SingleAction CreateQueueSingleAction()
         {
@@ -211,8 +212,8 @@ namespace CozmoAPI
         }
 
         public CozAsyncResult PickupObject(int objectId, float approachingAngleRad = 0f, bool useApproachingAngle = false,
-            bool usePreDockPose = false, bool useManualSpeed = false,
-            CozPathMotionProfile motionProfile = null)
+            bool usePreDockPose = true, bool useManualSpeed = false,
+            CozPathMotionProfile motionProfile = null, int numberOfRetries = 0)
         {
             ActionPickupObject action = new ActionPickupObject()
             {
@@ -321,9 +322,10 @@ namespace CozmoAPI
             ExecuteCommand(new ImageRequest() { Mode = mode });
         }
 
-        public CozAsyncResult ExecuteAction(IRobotActionUnion action)
+        public CozAsyncResult ExecuteAction(IRobotActionUnion action, byte numberOfRetries = 0)
         {
             SingleAction ret = CreateQueueSingleAction();
+            ret.QueueSingleAction.NumberOfRetries = numberOfRetries;
             ret.QueueSingleAction.Action = action;
             ExecuteCommand(ret.QueueSingleAction);
             return ret.Result;

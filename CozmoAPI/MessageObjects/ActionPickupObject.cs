@@ -14,6 +14,7 @@ namespace CozmoAPI.MessageObjects
             : base()
         {
             MotionProfile = new CozPathMotionProfile();
+            UsePreDockPose = true;
         }
 
         [CozParameter(0)]

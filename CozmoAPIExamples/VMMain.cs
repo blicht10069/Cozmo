@@ -25,6 +25,9 @@ namespace CozmoAPIExamples
         private RobotObservedFace mLastObserved = null;
         private bool mIsCameraOn = false;
         private bool mIsLightOn = false;
+        private ActivityMode mActivityMode = ActivityMode.None;
+        private DateTime mNextTiltAndPan = DateTime.MinValue;
+        private bool mWorkingOnIt = false;
 
         public VMMain()
             : base()
@@ -95,14 +98,36 @@ namespace CozmoAPIExamples
             switch (e.EventType)
             {
                 case CozEventType.RobotObservedObject:
+                    if (mWorkingOnIt || mActivityMode != ActivityMode.GotoAndPickupObject) return;
                     RobotObservedObject roo = (RobotObservedObject)e.Data;
-                    Console.WriteLine(roo.ObjectID);
-                    mBlockID = roo.ObjectID;
+                    switch (roo.ObjectType)
+                    {
+                        case ObjectType.Block_LIGHTCUBE1:
+                        case ObjectType.Block_LIGHTCUBE2:
+                        case ObjectType.Block_LIGHTCUBE3:
+                            mWorkingOnIt = true;
+                            MessageStack.Default.Push(o =>
+                                {
+                                    Console.WriteLine("Moving in on object: {0}", roo.ObjectID);
+                                    mConnection.MoveToObject(roo.ObjectID, 70f).Wait();
+                                    Console.WriteLine("Now Picking Up Object {0}", roo.ObjectID);
+                                    mConnection.CalibrateMotors(false, true).Wait();
+                                    CozAsyncResult action = mConnection.PickupObject(roo.ObjectID, numberOfRetries: 3);
+                                    Console.WriteLine("trying to pick up object");
+                                    action.Wait();
+                                    Console.WriteLine("pick up is {0}", action.ResultCode);
+                                    mWorkingOnIt = false;
+                                });
+                            break;
+                    }
                     break;
                 case CozEventType.RobotObservedFace:
                     RobotObservedFace rof = (RobotObservedFace)e.Data;
                     mLastObserved = rof;
                     break;                
+                case CozEventType.RobotConnectionResponse:
+                    
+                    break;
             }
         }
 
@@ -251,8 +276,27 @@ namespace CozmoAPIExamples
                     mConnection.SetHeadlights(mIsLightOn);
                      */
                     break;
+                case "GotoPickup":
+                    if (mActivityMode != ActivityMode.None)
+                    {
+                        mActivityMode = ActivityMode.None;
+                        mConnection.Speak("No longer seeking objects").Wait();
+                    }
+                    else
+                    {
+                        mConnection.SetHeadAngle(Utilities.ToRadians(10)).Wait();
+                        mConnection.Speak("Yes SIR!").Wait();
+                        mActivityMode = ActivityMode.GotoAndPickupObject;
+                    }
+                    break;
             }
         }
        
+    }
+
+    public enum ActivityMode
+    {
+        None = 0,
+        GotoAndPickupObject 
     }
 }

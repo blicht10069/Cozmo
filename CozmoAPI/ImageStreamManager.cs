@@ -139,7 +139,6 @@ namespace CozmoAPI
                     mChunks.Sort();
                     int width = mChunks[0].Resolution.Width;
                     int height = mChunks[0].Resolution.Height;
-                    Console.WriteLine("Image {0}x{1}", width, height);
                     MemoryStream ms = new MemoryStream();
                     foreach (ImageChunk ic in mChunks)
                         ms.Write(ic.Data, 0, ic.Data.Length);
