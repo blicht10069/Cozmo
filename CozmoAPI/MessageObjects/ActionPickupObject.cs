@@ -15,6 +15,7 @@ namespace CozmoAPI.MessageObjects
         {
             MotionProfile = new CozPathMotionProfile();
             UsePreDockPose = true;
+            CheckForObjectOnTop = true;
         }
 
         [CozParameter(0)]
@@ -54,6 +55,13 @@ namespace CozmoAPI.MessageObjects
 
         [CozParameter(5)]
         public bool UseManualSpeed
+        {
+            get;
+            set;
+        }
+
+        [CozParameter(6)]
+        public bool CheckForObjectOnTop
         {
             get;
             set;

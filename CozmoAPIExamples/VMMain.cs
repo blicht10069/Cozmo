@@ -13,6 +13,7 @@ using CozmoAPI.CozDataStructures;
 using CozmoAPI.Enums;
 using CozmoAPI.EventObjects;
 using CozmoAPI.MessageObjects;
+using CozmoAPI.Tasks;
 
 namespace CozmoAPIExamples
 {
@@ -28,6 +29,8 @@ namespace CozmoAPIExamples
         private ActivityMode mActivityMode = ActivityMode.None;
         private DateTime mNextTiltAndPan = DateTime.MinValue;
         private bool mWorkingOnIt = false;
+        private TaskStack mTaskStack;
+        private bool mIsPatrolling = false;
 
         public VMMain()
             : base()
@@ -37,8 +40,7 @@ namespace CozmoAPIExamples
             Status = "Ready";
             mConnection.Output = TextWriter.Null;
             mConnection.RobotEvent += mConnection_RobotEvent;
-            mConnection.ImageEvent += mConnection_ImageEvent;
-                
+            mConnection.ImageEvent += mConnection_ImageEvent;            
         }
 
         private void Draw(Graphics g, CozPoint[] points)
@@ -98,7 +100,7 @@ namespace CozmoAPIExamples
             switch (e.EventType)
             {
                 case CozEventType.RobotObservedObject:
-                    if (mWorkingOnIt || mActivityMode != ActivityMode.GotoAndPickupObject) return;
+                    if (mWorkingOnIt || !mIsPatrolling) return;
                     RobotObservedObject roo = (RobotObservedObject)e.Data;
                     switch (roo.ObjectType)
                     {
@@ -106,6 +108,7 @@ namespace CozmoAPIExamples
                         case ObjectType.Block_LIGHTCUBE2:
                         case ObjectType.Block_LIGHTCUBE3:
                             mWorkingOnIt = true;
+                            /*
                             MessageStack.Default.Push(o =>
                                 {
                                     Console.WriteLine("Moving in on object: {0}", roo.ObjectID);
@@ -118,6 +121,9 @@ namespace CozmoAPIExamples
                                     Console.WriteLine("pick up is {0}", action.ResultCode);
                                     mWorkingOnIt = false;
                                 });
+                             */
+                            mTaskStack.Push(new TaskMoveToObjectAndPickItUp(roo.ObjectID));
+                            mTaskStack.AbortCurrentTask();                           
                             break;
                     }
                     break;
@@ -149,6 +155,7 @@ namespace CozmoAPIExamples
             {
                 case "Connect":
                     mConnection.ConnectClean();
+                    mTaskStack = new TaskStack(mConnection);        
                     Status = "Connected";
                     break;
                 case "Disconnect":
@@ -276,6 +283,10 @@ namespace CozmoAPIExamples
                     mConnection.SetHeadlights(mIsLightOn);
                      */
                     break;
+                case "NightVision":
+                    mIsLightOn = !mIsLightOn;
+                    mConnection.SetHeadlights(mIsLightOn);
+                    break;
                 case "GotoPickup":
                     if (mActivityMode != ActivityMode.None)
                     {
@@ -288,6 +299,22 @@ namespace CozmoAPIExamples
                         mConnection.Speak("Yes SIR!").Wait();
                         mActivityMode = ActivityMode.GotoAndPickupObject;
                     }
+                    break;
+                case "Patrol":
+                    mIsPatrolling = !mIsPatrolling;
+                    if (mIsPatrolling)
+                    {
+                        TaskPatrol task = new TaskPatrol();
+                        task.Points = new CozPointCollection()
+                        {
+                            { Utilities.FeetToMM(-1), 0 },
+                            { 0, Utilities.FeetToMM(1.5) },
+                            { Utilities.FeetToMM(1), 0 }
+                        };
+                        mTaskStack.Push(task);
+                    }
+                    else
+                        mTaskStack.AbortCurrentTask();
                     break;
             }
         }

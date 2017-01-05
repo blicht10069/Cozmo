@@ -1,5 +1,6 @@
 ﻿using System;
 using System.Collections.Generic;
+using System.Collections.ObjectModel;
 using System.Linq;
 using System.Text;
 
@@ -26,4 +27,18 @@ namespace CozmoAPI.CozDataStructures
             set;
         }
     }
+
+    public class CozPointCollection : Collection<CozPoint>
+    {
+        public CozPointCollection()
+            : base()
+        {
+        }
+
+        public void Add(float x, float y)
+        {
+            Add(new CozPoint() { X = x, Y = y });
+        }
+    }
+
 }

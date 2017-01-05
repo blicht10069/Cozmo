@@ -16,6 +16,24 @@ namespace CozmoAPI
 
         private CozConnection mConnection;
 
+        protected CozAsyncResult()
+        {
+        }
+
+        public static CozAsyncResult CreateEmptyResult(CozConnection connection)
+        {
+            CozAsyncResult ret = new CozAsyncResult();
+            ret.mConnection = connection;
+            ret.mReset = new ManualResetEvent(true);
+            ret.Command = null;
+            ret.ResultCode = 1;
+            ret.Completed = null;
+            ret.IsComplete = true;
+            return ret;
+        }
+        
+             
+
         public CozAsyncResult(CozConnection connection, IRobotCommand command, Func<RobotEventArgs, bool> callback)
             : base()
         {

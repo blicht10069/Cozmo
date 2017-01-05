@@ -29,8 +29,17 @@ namespace CozmoAPI
         private Action<ImageEventArgs> mImageEvent;
         private ImageStreamManager mImageStreamManager;
         private SetBackpackLED mBackpackLedState = new SetBackpackLED();
+        private bool mIsNullConnection = false;
+        private CozConnection mUnderlyingConnection = null;
+        private SingleAction mLastAction = null;
+        private CozConnection mUltimateSource = null;
+
+        protected CozConnection()
+        {
+        }
 
         public CozConnection(string adbLocation = @"E:\cozmo\platform-tools\", int cozmoSDKPort = 5106)
+            : this()
         {
             if (!adbLocation.EndsWith("\\")) adbLocation = adbLocation + "\\";
             mImageStreamManager = new ImageStreamManager();
@@ -45,10 +54,45 @@ namespace CozmoAPI
             mReader.Start();            
         }
 
+        public CozConnection Clone()
+        {
+            CozConnection ret = new CozConnection();
+            ret.mAdbExe = mAdbExe;
+            ret.mAdbPath = mAdbPath;
+            ret.mCozmoSDKPort = mCozmoSDKPort;
+            ret.mSocket = mSocket;
+            ret.mReset = new ManualResetEvent(false);
+            ret.mReader = mReader;
+            ret.mUltimateSource = mUltimateSource == null ? this : mUltimateSource;
+            ret.mImageStreamManager = mImageStreamManager;
+            ret.mBackpackLedState = mBackpackLedState;
+            return ret;
+        }
+
+        public CozConnection CreateNullConnection()
+        {
+            CozConnection ret = new CozConnection();
+            mUnderlyingConnection = this;
+            ret.mIsNullConnection = true;
+            return ret;
+        }
+
         public event Action<RobotEventArgs> RobotEvent
         {
-            add { mRobotEvent += value; }
-            remove { mRobotEvent -= value; }
+            add
+            {
+                if (mUltimateSource == null)
+                    mRobotEvent += value;
+                else
+                    mUltimateSource.RobotEvent += value;
+            }
+            remove
+            {
+                if (mUltimateSource == null)
+                    mRobotEvent -= value;
+                else
+                    mUltimateSource.RobotEvent -= value;
+            }
         }
 
         public event Action<ImageEventArgs> ImageEvent
@@ -322,30 +366,43 @@ namespace CozmoAPI
         {
             ExecuteCommand(new ImageRequest() { Mode = mode });
         }
-
+        
         public CozAsyncResult ExecuteAction(IRobotActionUnion action, byte numberOfRetries = 0)
         {
             SingleAction ret = CreateQueueSingleAction();
             ret.QueueSingleAction.NumberOfRetries = numberOfRetries;
             ret.QueueSingleAction.Action = action;
+            if (mIsNullConnection)
+            {
+                return CozAsyncResult.CreateEmptyResult(this);
+            };
             ExecuteCommand(ret.QueueSingleAction);
+            mLastAction = ret;
             return ret.Result;
+        }
+
+        public SingleAction LastAction
+        {
+            get { return mLastAction; }
         }
 
         public void ExecuteCommand(object messageSource)
         {
+            if (mIsNullConnection) return;
             byte[] message = CozFunctionObjectCollection.Default.BuildMessage(messageSource);
             Send(message);
         }
 
         protected void SendText(string text)
-        {            
+        {
+            if (mIsNullConnection) return;
             byte[] buffer = Encoding.ASCII.GetBytes(text);
             Send(buffer);
         }
 
         protected void Send(byte[] buffer)
         {
+            if (mIsNullConnection) return;
             short size = (short)buffer.Length;
             NetworkStream ns = new NetworkStream(mSocket);
             BinaryWriter w = new BinaryWriter(ns);            
