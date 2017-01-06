@@ -29,7 +29,7 @@ namespace CozmoAPIExamples
         private ActivityMode mActivityMode = ActivityMode.None;
         private DateTime mNextTiltAndPan = DateTime.MinValue;
         private bool mWorkingOnIt = false;
-        private TaskStack mTaskStack;
+        private TaskQueue mTaskStack;
         private bool mIsPatrolling = false;
         private bool mObserveBlock = true;
 
@@ -159,7 +159,7 @@ namespace CozmoAPIExamples
             {
                 case "Connect":
                     mConnection.ConnectClean();
-                    mTaskStack = new TaskStack(mConnection);        
+                    mTaskStack = new TaskQueue(mConnection);        
                     Status = "Connected";
                     break;
                 case "Disconnect":

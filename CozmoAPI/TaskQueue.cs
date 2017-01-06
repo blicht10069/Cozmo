@@ -6,9 +6,9 @@ using System.Threading;
 
 namespace CozmoAPI
 {
-    public class TaskStack : IDisposable
+    public class TaskQueue : IDisposable
     {
-        private Stack<ITask> mStack = new Stack<ITask>();
+        private Queue<ITask> mStack = new Queue<ITask>();
         private Thread mStackProcessorThread;
         private AutoResetEvent mReset = new AutoResetEvent(false);
         private object mSync = new object();
@@ -16,7 +16,7 @@ namespace CozmoAPI
         private CozConnection mSourceConnection;
         private CozConnection mNullConnection;
 
-        public TaskStack(CozConnection source)
+        public TaskQueue(CozConnection source)
         {
             IsAborted = false;
             mSourceConnection = source.Clone();
@@ -103,7 +103,7 @@ namespace CozmoAPI
         {
             lock (mSync)
             {
-                mStack.Push(task);
+                mStack.Enqueue(task);
             }
             mReset.Set();
 
@@ -124,7 +124,7 @@ namespace CozmoAPI
                         count = mStack.Count;
                         if (count == 0) break;
                         if (mStack.Count > 0)
-                            task = mStack.Pop();
+                            task = mStack.Dequeue();
                         mCurrentTask = task;
                     }
                     IsAborted = false;
@@ -136,14 +136,22 @@ namespace CozmoAPI
 
     }
 
+    public class TaskStack : TaskQueue
+    {
+        public TaskStack(CozConnection source)
+            : base(source)
+        {
+        }
+    }
+
     public class TaskEventArgs : EventArgs
     {
-        public TaskEventArgs(TaskStack stack)
+        public TaskEventArgs(TaskQueue stack)
         {
             Stack = stack;
         }
 
-        public TaskStack Stack
+        public TaskQueue Stack
         {
             get;
             private set;
