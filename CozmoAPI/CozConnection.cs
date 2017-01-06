@@ -33,6 +33,7 @@ namespace CozmoAPI
         private CozConnection mUnderlyingConnection = null;
         private SingleAction mLastAction = null;
         private CozConnection mUltimateSource = null;
+        private CozPathMotionProfile mDefaultMotionProfile = null;
 
         protected CozConnection()
         {
@@ -54,13 +55,28 @@ namespace CozmoAPI
             mReader.Start();            
         }
 
+        protected Socket Socket
+        {
+            get
+            {
+                if (mUltimateSource == null)
+                    return mSocket;
+                else
+                    return mUltimateSource.mSocket;
+            }
+            set
+            {
+                if (mUltimateSource == null)
+                    mSocket = value;
+            }
+        }
+
         public CozConnection Clone()
         {
             CozConnection ret = new CozConnection();
             ret.mAdbExe = mAdbExe;
             ret.mAdbPath = mAdbPath;
             ret.mCozmoSDKPort = mCozmoSDKPort;
-            ret.mSocket = mSocket;
             ret.mReset = new ManualResetEvent(false);
             ret.mReader = mReader;
             ret.mUltimateSource = mUltimateSource == null ? this : mUltimateSource;
@@ -166,6 +182,20 @@ namespace CozmoAPI
             return new SingleAction(qsa, result);
         }
 
+        public CozPathMotionProfile DefaultMotionProfile
+        {
+            get
+            {
+                if (mDefaultMotionProfile == null)
+                    mDefaultMotionProfile = new CozPathMotionProfile();
+                return mDefaultMotionProfile;
+            }
+            set
+            {
+                mDefaultMotionProfile = value;
+            }
+        }
+
         public void SetHeadlights(bool isOn)
         {
             ExecuteCommand(new HeadlightControl() { IsLightOn = isOn });
@@ -223,7 +253,8 @@ namespace CozmoAPI
                 ObjectId = objectId, 
                 DistanceFromObjectMM = distanceFromObject, 
                 UseManualSpeed = useManualSpeed, 
-                UsePreDockPose = usePreDockPose 
+                UsePreDockPose = usePreDockPose,
+                MotionProfile = DefaultMotionProfile
             };
             if (motionProfile != null) action.MotionProfile = motionProfile;
             return ExecuteAction(action);
@@ -233,7 +264,7 @@ namespace CozmoAPI
         {
             ActionGotoPose action = new ActionGotoPose()
             {
-                X = x, Y = y, AngleInRadians = angleInRadians, Level = level, UseManualSpeed = useManualSpeed
+                X = x, Y = y, AngleInRadians = angleInRadians, Level = level, UseManualSpeed = useManualSpeed, MotionProfile = DefaultMotionProfile
             };
             if (motionProfile != null) action.MotionProfile = motionProfile;
             return ExecuteAction(action);
@@ -262,11 +293,12 @@ namespace CozmoAPI
         {
             ActionPickupObject action = new ActionPickupObject()
             {
-                ObjectId = objectId,
+                ObjectID = objectId,
                 ApproachAngleRad = approachingAngleRad,
                 UseApproachAngle = useApproachingAngle,
                 UsePreDockPose = usePreDockPose,
-                UseManualSpeed = useManualSpeed
+                UseManualSpeed = useManualSpeed,
+                MotionProfile = DefaultMotionProfile
             };
             if (motionProfile != null) action.MotionProfile = motionProfile;
             return ExecuteAction(action);
@@ -282,14 +314,39 @@ namespace CozmoAPI
             return ExecuteAction(new ActionPlaceObjectOnGroundHere());
         }
 
-        public CozAsyncResult PanAndTilt(float bodyPan = 0f, float headTilt = 0f, bool isPanAbsolute = false, bool isTiltAbsolute = false)
+        public CozAsyncResult PlaceObjectOnObject(int objectId)
         {
-            return ExecuteAction(new ActionPanAndTilt() { BodyPan = bodyPan, HeadTilt = headTilt, IsPanAbsolute = isPanAbsolute, IsTiltAbsolute = isTiltAbsolute });
+            return ExecuteAction(new ActionPlaceOnObject() { ObjectID = objectId, MotionProfile = DefaultMotionProfile });
         }
+
+        public CozAsyncResult PlaceRelativeToObject(int relativeObjectID, float offsetXMM, float approachingAngleRad = 0, bool useApproachingAngle = false)
+        {
+            return ExecuteAction(new ActionPlaceRelObject()
+            {
+                ObjectID = relativeObjectID,
+                PlacementOffsetXMM = offsetXMM,
+                ApproachingAngleRadians = approachingAngleRad,
+                UseApproachingAngle = useApproachingAngle,
+                MotionProfile = DefaultMotionProfile
+            });
+        }
+
+        public CozAsyncResult FlipBlock(int objectId, CozPathMotionProfile motionProfile = null)
+        {
+            ActionFlipBlock action = new ActionFlipBlock() { ObjectID = objectId, MotionProfile = DefaultMotionProfile };
+            if (motionProfile != null) action.MotionProfile = motionProfile;
+            return ExecuteAction(action);
+        }
+
 
         public CozAsyncResult AlignWithObject(int objectId)
         {
             return ExecuteAction(new ActionAlignWithObject() { ObjectID = objectId });
+        }
+
+        public CozAsyncResult PanAndTilt(float bodyPan = 0f, float headTilt = 0f, bool isPanAbsolute = false, bool isTiltAbsolute = false)
+        {
+            return ExecuteAction(new ActionPanAndTilt() { BodyPan = bodyPan, HeadTilt = headTilt, IsPanAbsolute = isPanAbsolute, IsTiltAbsolute = isTiltAbsolute });
         }
 
         public CozAsyncResult CalibrateMotors(bool headMotor, bool liftMotor)
@@ -344,11 +401,9 @@ namespace CozmoAPI
             return ExecuteAction(new ActionEnrollNamedFace() { FaceID = faceId, Name = name });
         }
 
-        public CozAsyncResult FlipBlock(int objectId, CozPathMotionProfile motionProfile = null)
+        public CozAsyncResult PlayAnimation(string animationName, int numberOfLoops = 1)
         {
-            ActionFlipBlock action = new ActionFlipBlock() { ObjectID = objectId };
-            if (motionProfile != null) action.MotionProfile = motionProfile;
-            return ExecuteAction(action);
+            return ExecuteAction(new ActionPlayAnimation() { NumberOfLoops = numberOfLoops, AnimationName = animationName });
         }
 
         public void AbortCommand(IRobotCommand command)
@@ -404,7 +459,7 @@ namespace CozmoAPI
         {
             if (mIsNullConnection) return;
             short size = (short)buffer.Length;
-            NetworkStream ns = new NetworkStream(mSocket);
+            NetworkStream ns = new NetworkStream(Socket);
             BinaryWriter w = new BinaryWriter(ns);            
             w.Write(size);
             w.Flush();
@@ -450,7 +505,7 @@ namespace CozmoAPI
         {
             if (mReset.WaitOne(TimeSpan.FromSeconds(10)))
             {
-                Socket socket = mSocket;
+                Socket socket = Socket;
                 if (socket != null)
                 {                    
                     NetworkStream ns = new NetworkStream(socket);

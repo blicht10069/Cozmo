@@ -31,6 +31,7 @@ namespace CozmoAPIExamples
         private bool mWorkingOnIt = false;
         private TaskStack mTaskStack;
         private bool mIsPatrolling = false;
+        private bool mObserveBlock = true;
 
         public VMMain()
             : base()
@@ -99,7 +100,10 @@ namespace CozmoAPIExamples
         {
             switch (e.EventType)
             {
-                case CozEventType.RobotObservedObject:
+                case CozEventType.RobotState:
+                    Console.WriteLine(1);
+                    break;
+                case CozEventType.RobotObservedObject:                    
                     if (mWorkingOnIt || !mIsPatrolling) return;
                     RobotObservedObject roo = (RobotObservedObject)e.Data;
                     switch (roo.ObjectType)
@@ -315,6 +319,9 @@ namespace CozmoAPIExamples
                     }
                     else
                         mTaskStack.AbortCurrentTask();
+                    break;
+                case "Click":
+                    mObserveBlock = true;
                     break;
             }
         }

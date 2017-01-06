@@ -7,15 +7,13 @@ using CozmoAPI.Enums;
 
 namespace CozmoAPI.MessageObjects
 {
-    [CozFunction(ActionType.pickupObject)]
-    public class ActionPickupObject : IRobotActionUnion
+    [CozFunction(CozMessageType.PlaceRelObject)]
+    public class ActionPlaceRelObject : IRobotActionUnion
     {
-        public ActionPickupObject()
-            : base()
+        public ActionPlaceRelObject()
         {
             MotionProfile = new CozPathMotionProfile();
-            UsePreDockPose = true;
-            CheckForObjectOnTop = true;
+            UsePreDockPose = false;
         }
 
         [CozParameter(0)]
@@ -33,38 +31,39 @@ namespace CozmoAPI.MessageObjects
         }
 
         [CozParameter(2)]
-        public float ApproachAngleRad
+        public float PlacementOffsetXMM
         {
             get;
             set;
         }
 
         [CozParameter(3)]
-        public bool UseApproachAngle
+        public float ApproachingAngleRadians
         {
             get;
             set;
         }
 
         [CozParameter(4)]
-        public bool UsePreDockPose
+        public bool UseApproachingAngle
         {
             get;
             set;
         }
 
         [CozParameter(5)]
-        public bool UseManualSpeed
+        public bool UsePreDockPose
         {
             get;
             set;
         }
 
         [CozParameter(6)]
-        public bool CheckForObjectOnTop
+        public bool UseManualSpeed
         {
             get;
             set;
         }
+
     }
 }

@@ -77,5 +77,10 @@ namespace CozmoAPI.EventObjects
             get;
             set;
         }
+
+        public override string ToString()
+        {
+            return Utilities.DebugObject(this);
+        }
     }
 }

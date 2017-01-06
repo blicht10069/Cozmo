@@ -64,5 +64,10 @@ namespace CozmoAPI.CozDataStructures
             set;
         }
 
+        public override string ToString()
+        {
+            return Utilities.DebugObject(this);
+        }
+
     }
 }
