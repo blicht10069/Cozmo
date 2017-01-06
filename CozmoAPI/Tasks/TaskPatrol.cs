@@ -37,6 +37,7 @@ namespace CozmoAPI.Tasks
                     double theta = Math.Sin(o / h);
                     Console.WriteLine("Moving to point {0:N2}, {1:N2}", pt.X, pt.Y);
                     e.Stack.Connection.MoveToPosition(pt.X, pt.Y, (float)theta).Wait();
+                    e.Stack.Connection.PanAndTilt(Utilities.ToRadians(45)).Wait();
                 }
             }
         }
