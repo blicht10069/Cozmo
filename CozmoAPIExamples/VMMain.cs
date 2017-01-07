@@ -316,7 +316,7 @@ namespace CozmoAPIExamples
                     }
                     break;
                 case "Click":
-                    PercisionParking();
+                    PrecisionParking();
                     break;
                 case "Patrol":
                     // this toggles patrol on or off
@@ -388,7 +388,7 @@ namespace CozmoAPIExamples
         // to the Cube's face 100 MM in front.
         // if you change the -100f to 100f your robot will move in front of the cube
         // by 100 MM and park directly in front of it.
-        private void PercisionParking()
+        private void PrecisionParking()
         {
             Action<RobotEventArgs> removal = null;
             Action<RobotEventArgs> spy = (e) =>
