@@ -58,7 +58,7 @@ namespace CozmoAPI.EventObjects
         }
 
         [CozParameter(6)]
-        public CozPose3D Post
+        public CozPose3D Pose
         {
             get;
             set;

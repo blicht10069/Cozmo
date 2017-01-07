@@ -207,6 +207,7 @@ namespace CozmoAPI
             ExecuteCommand(mBackpackLedState);
         }
 
+        
         public CozAsyncResult Speak(string text, CozAnimationTriggerType playEvent = CozAnimationTriggerType.Count, CozVoiceStyle voiceStyle = CozVoiceStyle.CozmoProcessing_Sentence, float duration = 1.8f, float pitch = 0f, bool fitToDuration = false)
         {
             return ExecuteAction(
@@ -234,12 +235,12 @@ namespace CozmoAPI
             );            
         }
 
-        public CozAsyncResult Turn(double angle, float turnSpeed = 1.57f, float acceleration = 0f, bool isAbsolute = false)
+        public CozAsyncResult Turn(float angleInRad, float turnSpeed = 1.57f, float acceleration = 0f, bool isAbsolute = false)
         {
             return ExecuteAction(
                 new ActionTurnInPlace()
                 {
-                    AngleInRad = ActionTurnInPlace.ToRadians(angle),
+                    AngleInRad = angleInRad,
                     SpeedRadPerSec = turnSpeed,
                     AccelerationRadPerSec2 = acceleration,
                     IsAbsolute = isAbsolute
@@ -408,6 +409,11 @@ namespace CozmoAPI
         public CozAsyncResult PlayAnimation(string animationName, int numberOfLoops = 1)
         {
             return ExecuteAction(new ActionPlayAnimation() { NumberOfLoops = numberOfLoops, AnimationName = animationName });
+        }
+
+        public CozAsyncResult PlayAnimationTrigger(CozAnimationTriggerType triggerType, int numberOfLoops = 1)
+        {
+            return ExecuteAction(new ActionPlayAnimationTrigger() { TriggerType = triggerType, NumberOfLoops = numberOfLoops });
         }
 
         public void AbortCommand(IRobotCommand command)

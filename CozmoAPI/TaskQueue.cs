@@ -15,6 +15,7 @@ namespace CozmoAPI
         private ITask mCurrentTask = null;
         private CozConnection mSourceConnection;
         private CozConnection mNullConnection;
+        private bool mAbortAllTaskMode = false;
 
         public TaskQueue(CozConnection source)
         {
@@ -61,6 +62,12 @@ namespace CozmoAPI
             }
         }
 
+        public void AbortAllTasks()
+        {
+            mAbortAllTaskMode = true;
+            AbortCurrentTask();
+        }
+
         public void AbortCurrentTask()
         {
             if (!IsAborted)
@@ -68,7 +75,6 @@ namespace CozmoAPI
                 IsAborted = true;
                 if (!mSourceConnection.LastAction.Result.IsComplete)
                     mSourceConnection.AbortByIdTag(mSourceConnection.LastAction.QueueSingleAction.IdTag);
-                //mSourceConnection.LastAction.Result.Wait();
             }
         }
 
@@ -131,7 +137,7 @@ namespace CozmoAPI
                             task = mStack.Dequeue();
                         mCurrentTask = task;
                     }
-                    IsAborted = false;
+                    if (!mAbortAllTaskMode) IsAborted = false;
                     task.Execute(arg);
                 }
             }

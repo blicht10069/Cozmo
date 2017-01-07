@@ -33,6 +33,7 @@ namespace CozmoAPIExamples
         private bool mIsPatrolling = false;
         private bool mObserveBlock = true;
         private bool mIsNoding = false;
+        private CleanRoomManager mCleanRoomManager;
 
         public VMMain()
             : base()
@@ -180,7 +181,7 @@ namespace CozmoAPIExamples
                     );
                     break;
                 case "TurnRight":
-                    mConnection.Turn(90).Wait();
+                    mConnection.Turn(Utilities.ToRadians(90)).Wait();
                     break;
                 case "Box":
                     for (int i = 0; i < 4; i++)
@@ -286,8 +287,23 @@ namespace CozmoAPIExamples
                     break;
                 case "NightVision":
                     mIsLightOn = !mIsLightOn;
-                    mConnection.SetHeadlights(mIsLightOn);
+                    mConnection.SetHeadlights(mIsLightOn);                    
                     break;                
+                case "Animate":
+                    mConnection.PlayAnimationTrigger(CozAnimationTriggerType.CozmoSaysGetOut).Wait();
+                    break;
+                case "CleanRoom":
+                    if (mCleanRoomManager == null)
+                    {
+                        CleanRoomSetup setup = new CleanRoomSetup(mConnection);
+                        mCleanRoomManager = new CleanRoomManager(setup);
+                    }
+                    else
+                    {
+                        mCleanRoomManager.Stop();
+                        mCleanRoomManager = null;
+                    }
+                    break;
                 case "Patrol":
                     // this toggles patrol on or off
                     // patrol is another example of using the task queue.

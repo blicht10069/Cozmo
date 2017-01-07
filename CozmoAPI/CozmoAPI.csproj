@@ -85,6 +85,7 @@
     <Compile Include="MessageObjects\ActionPlaceObjectOnGroundHere.cs" />
     <Compile Include="MessageObjects\ActionPlaceOnObject.cs" />
     <Compile Include="MessageObjects\ActionPlaceRelObject.cs" />
+    <Compile Include="MessageObjects\ActionPlayAnimationTrigger.cs" />
     <Compile Include="MessageObjects\ActionSayText.cs" />
     <Compile Include="CozAttributes.cs" />
     <Compile Include="CozConnection.cs" />
