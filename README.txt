@@ -6,9 +6,9 @@ ADB is the Andriod Debug Bridge (okay, technically I know A is for Android and B
 but you can also use Deathly)
 
 The official site for getting this file is: https://developer.android.com/studio/index.html#downloads 
-(lookin the Get Just the Command Line Tools area)
+(look in the Get Just the Command Line Tools area)
 
-You can also directly download hte 25.2.3 version here: https://dl.google.com/android/repository/tools_r25.2.3-windows.zip
+You can also directly download the 25.2.3 version here: https://dl.google.com/android/repository/tools_r25.2.3-windows.zip
 
 Unzip the content and run the andriod.bat script.
 
