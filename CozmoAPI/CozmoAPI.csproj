@@ -100,6 +100,7 @@
     <Compile Include="MessageObjects\SetBackpackLED.cs" />
     <Compile Include="MessageObjects\ConnectToUiDevice.cs" />
     <Compile Include="MessageObjects\SetCameraSettings.cs" />
+    <Compile Include="MessageObjects\StopAllMotors.cs" />
     <Compile Include="MessageStack.cs" />
     <Compile Include="Properties\AssemblyInfo.cs" />
     <Compile Include="MessageObjects\QueueSingleAction.cs" />

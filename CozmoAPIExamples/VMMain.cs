@@ -302,6 +302,8 @@ namespace CozmoAPIExamples
                     mIsPatrolling = !mIsPatrolling;
                     if (mIsPatrolling)
                     {
+                        mConnection.DriveOffChargerContacts().Wait();
+                        mConnection.StopAllMotors();
                         mConnection.RobotEvent += OnPatrolEvent;
                         TaskPatrol task = new TaskPatrol();
                         task.Points = new CozPointCollection()

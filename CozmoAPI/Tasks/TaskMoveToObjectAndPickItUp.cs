@@ -19,7 +19,7 @@ namespace CozmoAPI.Tasks
         protected override void DoTask(TaskEventArgs e)
         {
             Console.WriteLine("Moving to object {0}", mObjectID);
-            e.Stack.Connection.MoveToObject(mObjectID, 20f).Wait();
+            e.Stack.Connection.MoveToObject(mObjectID, 100f).Wait();
             Console.WriteLine("Now in pickup mode");
             e.Stack.Connection.PickupObject(mObjectID, numberOfRetries: 3).Wait();
         }

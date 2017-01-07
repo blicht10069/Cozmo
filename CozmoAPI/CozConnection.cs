@@ -359,6 +359,10 @@ namespace CozmoAPI
             return ExecuteAction(ActionDriveOffChargerContacts.Default);
         }
 
+        public void StopAllMotors()
+        {
+            ExecuteCommand(CozmoAPI.MessageObjects.StopAllMotors.Default);
+        }
         public CozAsyncResult DisplayText(string text, int durationInMS = 1000, int x = 5, int y = 5, float fontSize = 16f, string fontName = "Ariel")
         {
             ActionDisplayFaceImage img = new ActionDisplayFaceImage();
