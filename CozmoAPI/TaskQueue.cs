@@ -94,6 +94,10 @@ namespace CozmoAPI
             }
         }
 
+        public void Push(Action<TaskEventArgs> code)
+        {
+            Push(0, String.Empty, code);
+        }
         public void Push(int id = 0, string name = "", Action<TaskEventArgs> code = null)
         {
             Push(new Task(id, name, code));

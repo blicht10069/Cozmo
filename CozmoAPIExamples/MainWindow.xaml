@@ -28,9 +28,7 @@
             <Button Style="{StaticResource ToolBarItem}" Width="100" Content="Change Dispaly" Command="{Binding CommandLink}" CommandParameter="DisplayALine" />
             <Button Style="{StaticResource ToolBarItem}" Width="100" Content="Flip Block 2" Command="{Binding CommandLink}" CommandParameter="FlipCube2" />
             <Button Style="{StaticResource ToolBarItem}" Width="100" Content="Move To Pt A and back" Command="{Binding CommandLink}" CommandParameter="MoveToASpecificLocation" />
-            <Button Style="{StaticResource ToolBarItem}" Width="100" Content="Pick Up Block" Command="{Binding CommandLink}" CommandParameter="PickUpBlock" />
             <Button Style="{StaticResource ToolBarItem}" Width="100" Content="Toggle Lights" Command="{Binding CommandLink}" CommandParameter="ToggleLights" />
-            <Button Style="{StaticResource ToolBarItem}" Width="100" Content="Goto &amp; Pickup Object" Command="{Binding CommandLink}" CommandParameter="GotoPickup" />
             <Button Style="{StaticResource ToolBarItem}" Width="100" Content="Patrol" Command="{Binding CommandLink}" CommandParameter="Patrol" />
             <Button Style="{StaticResource ToolBarItem}" Width="100" Content="Night Vision" Command="{Binding CommandLink}" CommandParameter="NightVisiion" />
         </WrapPanel>

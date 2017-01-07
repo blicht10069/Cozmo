@@ -29,14 +29,16 @@ namespace CozmoAPIExamples
         private ActivityMode mActivityMode = ActivityMode.None;
         private DateTime mNextTiltAndPan = DateTime.MinValue;
         private bool mWorkingOnIt = false;
-        private TaskQueue mTaskStack;
+        private TaskQueue mTaskQueue;
         private bool mIsPatrolling = false;
         private bool mObserveBlock = true;
+        private bool mIsNoding = false;
 
         public VMMain()
             : base()
         {
-            mConnection = new CozConnection();
+            // mConnection = new CozConnection(@"c:\andriod_adb_path\adb.exe"); 
+            mConnection = new CozConnection(); // pass your path and filename to adb.exe here
             mTimer = new DispatcherTimer(TimeSpan.FromSeconds(0.05), DispatcherPriority.Background, OnTick, Dispatcher.CurrentDispatcher);
             Status = "Ready";
             mConnection.Output = TextWriter.Null;
@@ -103,7 +105,8 @@ namespace CozmoAPIExamples
                 case CozEventType.RobotState:
                     Console.WriteLine(1);
                     break;
-                case CozEventType.RobotObservedObject:                    
+                case CozEventType.RobotObservedObject:      
+                    /*
                     if (mWorkingOnIt || !mIsPatrolling) return;
                     RobotObservedObject roo = (RobotObservedObject)e.Data;
                     switch (roo.ObjectType)
@@ -111,25 +114,12 @@ namespace CozmoAPIExamples
                         case ObjectType.Block_LIGHTCUBE1:
                         case ObjectType.Block_LIGHTCUBE2:
                         case ObjectType.Block_LIGHTCUBE3:
-                            mWorkingOnIt = true;
-                            /*
-                            MessageStack.Default.Push(o =>
-                                {
-                                    Console.WriteLine("Moving in on object: {0}", roo.ObjectID);
-                                    mConnection.MoveToObject(roo.ObjectID, 70f).Wait();
-                                    Console.WriteLine("Now Picking Up Object {0}", roo.ObjectID);
-                                    mConnection.CalibrateMotors(false, true).Wait();
-                                    CozAsyncResult action = mConnection.PickupObject(roo.ObjectID, numberOfRetries: 3);
-                                    Console.WriteLine("trying to pick up object");
-                                    action.Wait();
-                                    Console.WriteLine("pick up is {0}", action.ResultCode);
-                                    mWorkingOnIt = false;
-                                });
-                             */
-                            mTaskStack.Push(new TaskMoveToObjectAndPickItUp(roo.ObjectID));
-                            mTaskStack.AbortCurrentTask();                           
+                            mWorkingOnIt = true;                            
+                            mTaskQueue.Push(new TaskMoveToObjectAndPickItUp(roo.ObjectID));
+                            mTaskQueue.AbortCurrentTask();                           
                             break;
                     }
+                     */ 
                     break;
                 case CozEventType.RobotObservedFace:
                     RobotObservedFace rof = (RobotObservedFace)e.Data;
@@ -159,7 +149,7 @@ namespace CozmoAPIExamples
             {
                 case "Connect":
                     mConnection.ConnectClean();
-                    mTaskStack = new TaskQueue(mConnection);        
+                    mTaskQueue = new TaskQueue(mConnection);        
                     Status = "Connected";
                     break;
                 case "Disconnect":
@@ -167,22 +157,27 @@ namespace CozmoAPIExamples
                     Status = "Disconnected";
                     break;
                 case "SayHello":
-                    string[] parts = "Hello Ben, how are you today".Split(' ');
-                    float pitch = 0f;
-                    foreach (string part in parts)
-                    {
-                        mConnection.Speak(part, pitch: pitch).Wait();
-                        pitch += 0.1f;
-                    }
+                    mTaskQueue.Push(e =>
+                        {
+                            string[] parts = "Hello Ben, how are you today".Split(' ');
+                            float pitch = 0f;
+                            foreach (string part in parts)
+                            {
+                                e.Stack.Connection.Speak(part, pitch: pitch).Wait();
+                                pitch += 0.1f;
+                            }
+                        }
+                    );
                     break;
                 case "MoveForward":
-                    CozAsyncResult wait = mConnection.Move(10f, 100f);
-                    Status = "Moving...";
-                    Thread.Sleep(5000);
-                    Status = "Aborting...";
-                    mConnection.AbortCommand(wait.Command);
-                    wait.Wait();
-                    Status = "Done";
+                    mTaskQueue.Push(e =>
+                        {
+                            CozAsyncResult wait = e.Stack.Connection.Move(10f, 100f);
+                            Thread.Sleep(5000);
+                            e.Stack.Connection.AbortCommand(wait.Command); // example of aborting a command early
+                            wait.Wait();
+                        }
+                    );
                     break;
                 case "TurnRight":
                     mConnection.Turn(90).Wait();
@@ -207,6 +202,7 @@ namespace CozmoAPIExamples
                     Status = "Box Queued Up";
                     break;
                 case "MountCharger":
+                    // This doesn't appear to work, or I've got a bug in my implementation
                     mConnection.MountCharger();
                     break;
                 case "ImageRequest":
@@ -218,15 +214,36 @@ namespace CozmoAPIExamples
                     Status = "Getting Images";
                     break;
                 case "Nod":
-                    mConnection.SetHeadAngle(Utilities.ToRadians(20), durationInSeconds: 0.2f).Wait();
-                    Thread.Sleep(500);
-                    for (int i = 0; i < 5; i++)
+                    // this shows how easy it is to abort an item on the queue
+                    // this code will abort the current task running first.
+                    // so click nod, and then in the middle click nod again
+                    // notice you do not need to check at every point in the code
+                    // if you are aborted.  What happens is the e.Stack.Connection
+                    // is replaced when you are aborted.  Your current command is stopped
+                    // in the robot, and you are given a null connection
+                    // the null connection continues to take the commands,
+                    // but does not send them to the robot.  It returns a result
+                    // that is immediately complete.
+                    if (mIsNoding)
+                        mTaskQueue.AbortCurrentTask();
+                    else
                     {
-                        mConnection.SetHeadAngle(Utilities.ToRadians(30), durationInSeconds: 0.1f).Wait();
-                        mConnection.SetHeadAngle(Utilities.ToRadians(10), durationInSeconds: 0.1f).Wait();
+                        mIsNoding = true;
+                        mTaskQueue.Push(e =>
+                            {
+                                e.Stack.Connection.SetHeadAngle(Utilities.ToRadians(20), durationInSeconds: 0.2f).Wait();
+                                Thread.Sleep(500);
+                                for (int i = 0; i < 5; i++)
+                                {
+                                    e.Stack.Connection.SetHeadAngle(Utilities.ToRadians(30), durationInSeconds: 0.1f).Wait();
+                                    e.Stack.Connection.SetHeadAngle(Utilities.ToRadians(10), durationInSeconds: 0.1f).Wait();
+                                }
+                                Thread.Sleep(500);
+                                e.Stack.Connection.SetHeadAngle(Utilities.ToRadians(-20), durationInSeconds: 0.5f).Wait();
+                                mIsNoding = false;
+                            }
+                        );
                     }
-                    Thread.Sleep(500);
-                    mConnection.SetHeadAngle(Utilities.ToRadians(-20), durationInSeconds: 0.5f).Wait();
                     break;
                 case "Calibrate":
                     CozAsyncResult ar = mConnection.CalibrateMotors(true, true);
@@ -249,23 +266,7 @@ namespace CozmoAPIExamples
                 case "MoveToASpecificLocation":
                     mConnection.MoveToPosition(Utilities.FeetToMM(1), Utilities.FeetToMM(1), Utilities.ToRadians(180)).Wait();
                     mConnection.MoveToPosition(Utilities.FeetToMM(0), Utilities.FeetToMM(0), Utilities.ToRadians(0)).Wait();
-                    break;
-                case "PickUpBlock":
-                    mConnection.Output = Console.Out;
-                    /*
-                    int blockId = mBlockID;
-                    if (mBlockID > 0)
-                    {
-                        mConnection.CalibrateMotors(true, true).Wait();
-                        mConnection.SetHeadAngle(Utilities.ToRadians(10)).Wait();
-                        mConnection.MoveToObject(blockId, 0f).Wait();
-                        mConnection.PickupObject(blockId).Wait();
-                    }
-                    else
-                        Status = "No Block Found";
-                     */
-                    mConnection.SetLiftHeight(150).Wait();
-                    break;
+                    break;                
                 case "ToggleLights":
                     mIsLightOn = !mIsLightOn;
                     mConnection.SetBackpackLightState(BackpackLightID.Top, mIsLightOn ? Color.Blue : Color.Black);
@@ -281,33 +282,27 @@ namespace CozmoAPIExamples
                     led.SetLightState(BackpackLightID.Left, mIsLightOn ? Color.Red : Color.Black);
                     led.SetLightState(BackpackLightID.Right, mIsLightOn ? Color.Purple : Color.Black);
                     mConnection.ExecuteCommand(led);
-                     */
-                    /*
-                    mIsLightOn = !mIsLightOn;
-                    mConnection.SetHeadlights(mIsLightOn);
-                     */
+                     */                    
                     break;
                 case "NightVision":
                     mIsLightOn = !mIsLightOn;
                     mConnection.SetHeadlights(mIsLightOn);
-                    break;
-                case "GotoPickup":
-                    if (mActivityMode != ActivityMode.None)
-                    {
-                        mActivityMode = ActivityMode.None;
-                        mConnection.Speak("No longer seeking objects").Wait();
-                    }
-                    else
-                    {
-                        mConnection.SetHeadAngle(Utilities.ToRadians(10)).Wait();
-                        mConnection.Speak("Yes SIR!").Wait();
-                        mActivityMode = ActivityMode.GotoAndPickupObject;
-                    }
-                    break;
+                    break;                
                 case "Patrol":
+                    // this toggles patrol on or off
+                    // patrol is another example of using the task queue.
+                    // the TaskPatrol will take an array of point
+                    // and will have Cozmo patrol that polygon
+                    // over and over. 
+                    // at the same time the method subscribes to the
+                    // Robot Event service (calling OnPatrolEvent)
+                    // If the Robot spies a Cube, then it stops 
+                    // what its doing and goes right for the
+                    // cube and picks it up.
                     mIsPatrolling = !mIsPatrolling;
                     if (mIsPatrolling)
                     {
+                        mConnection.RobotEvent += OnPatrolEvent;
                         TaskPatrol task = new TaskPatrol();
                         task.Points = new CozPointCollection()
                         {
@@ -315,14 +310,39 @@ namespace CozmoAPIExamples
                             { 0, Utilities.FeetToMM(1.5) },
                             { Utilities.FeetToMM(1), 0 }
                         };
-                        mTaskStack.Push(task);
+                        mTaskQueue.Push(task);
                     }
                     else
-                        mTaskStack.AbortCurrentTask();
+                    {
+                        mConnection.RobotEvent -= OnPatrolEvent;
+                        mTaskQueue.AbortCurrentTask();
+                    }
                     break;
-                case "Click":
-                    mObserveBlock = true;
-                    break;
+            }
+
+            
+        }
+
+        private void OnPatrolEvent(RobotEventArgs e)
+        {
+            if (e.EventType == CozEventType.RobotObservedObject)
+            {
+                RobotObservedObject roo = (RobotObservedObject)e.Data;
+                switch (roo.ObjectType)
+                {
+                    case ObjectType.Block_LIGHTCUBE1:
+                    case ObjectType.Block_LIGHTCUBE2:
+                    case ObjectType.Block_LIGHTCUBE3:
+                        mConnection.RobotEvent -= OnPatrolEvent;
+                        mTaskQueue.Push(e2 =>
+                            {
+                                e2.Stack.Connection.Speak("ahoy, I spotted me object!").Wait();
+                            }
+                        );
+                        mTaskQueue.Push(new TaskMoveToObjectAndPickItUp(roo.ObjectID));
+                        mTaskQueue.AbortCurrentTask();
+                        break;
+                }
             }
         }
        
