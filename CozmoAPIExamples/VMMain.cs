@@ -31,7 +31,7 @@ namespace CozmoAPIExamples
         private bool mWorkingOnIt = false;
         private TaskQueue mTaskQueue;
         private bool mIsPatrolling = false;
-        private bool mObserveBlock = true;
+        private bool mObserveBlock = false;
         private bool mIsNoding = false;
         private CleanRoomManager mCleanRoomManager;
 
@@ -104,9 +104,20 @@ namespace CozmoAPIExamples
             switch (e.EventType)
             {
                 case CozEventType.RobotState:
-                    Console.WriteLine(1);
                     break;
                 case CozEventType.RobotObservedObject:      
+                    if (mObserveBlock)
+                    {
+                        mObserveBlock = false;
+                        RobotObservedObject roo = (RobotObservedObject)e.Data;
+                        Console.WriteLine("Found Block {0} at ({1:N2}, {2:N2}, {3:N2}) at {4:N3} degrees",
+                            roo.ObjectID, roo.Pose.X, roo.Pose.Y, roo.Pose.Z, roo.Pose.AngleZ);
+                        mTaskQueue.Push(e2 =>
+                            {
+                                CozPoint pt = roo.Pose.CalculateOffsetPosition(-100f);
+                                e2.Stack.Connection.MoveToPosition(pt.X, pt.Y, (float)roo.Pose.AngleZRad).Wait();
+                            });
+                    }
                     /*
                     if (mWorkingOnIt || !mIsPatrolling) return;
                     RobotObservedObject roo = (RobotObservedObject)e.Data;
@@ -304,6 +315,9 @@ namespace CozmoAPIExamples
                         mCleanRoomManager = null;
                     }
                     break;
+                case "Click":
+                    PercisionParking();
+                    break;
                 case "Patrol":
                     // this toggles patrol on or off
                     // patrol is another example of using the task queue.
@@ -363,6 +377,39 @@ namespace CozmoAPIExamples
                 }
             }
         }
+
+        // This example demonstrates the new properties and methods added to the CozPose3D object
+        // you can now get the Angle in Radians or Degrees of the observed object relatevie to the
+        // position of the robot.
+        // Also introduced is the CalculateOffsetPosition method which given a distance
+        // will calculate the X & Y coordinates of the robot.
+        // using these two methods we can get the robot to line up with any cube
+        // it spots -- this function will always part the Robot perpedicular 
+        // to the Cube's face 100 MM in front.
+        // if you change the -100f to 100f your robot will move in front of the cube
+        // by 100 MM and park directly in front of it.
+        private void PercisionParking()
+        {
+            Action<RobotEventArgs> removal = null;
+            Action<RobotEventArgs> spy = (e) =>
+            {
+                if (e.EventType == CozEventType.RobotObservedObject)
+                {
+                    mConnection.RobotEvent -= removal;
+                    RobotObservedObject roo = (RobotObservedObject)e.Data;
+                    Console.WriteLine("Found Block {0} at ({1:N2}, {2:N2}, {3:N2}) at {4:N3} degrees",
+                        roo.ObjectID, roo.Pose.X, roo.Pose.Y, roo.Pose.Z, roo.Pose.AngleZ);
+                    mTaskQueue.Push(e2 =>
+                    {
+                        CozPoint pt = roo.Pose.CalculateOffsetPosition(-100f);
+                        e2.Stack.Connection.MoveToPosition(pt.X, pt.Y, (float)roo.Pose.AngleZRad).Wait();
+                    });
+                };
+            };
+            removal = spy;
+            mConnection.RobotEvent += spy;
+        }
+
        
     }
 

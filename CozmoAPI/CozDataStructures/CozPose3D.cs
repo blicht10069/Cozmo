@@ -64,6 +64,28 @@ namespace CozmoAPI.CozDataStructures
             set;
         }
 
+
+        public double AngleZRad
+        {
+            get
+            {
+                return Math.Atan2(2 * (Q1 * Q2 + Q0 * Q3), 1 - 2 * (Math.Pow(Q2, 2) + Math.Pow(Q3, 2)));
+            }
+        }
+
+        public double AngleZ
+        {
+            get { return Utilities.ToDegrees(AngleZRad); }
+        }
+
+        public CozPoint CalculateOffsetPosition(float radiusMM)
+        {
+            double angle = AngleZRad;
+            float x = (float)(radiusMM * Math.Cos(angle));
+            float y = (float)(radiusMM * Math.Sin(angle));
+            return new CozPoint() { X = x + X, Y = y + Y };
+        }
+
         public override string ToString()
         {
             return Utilities.DebugObject(this);
