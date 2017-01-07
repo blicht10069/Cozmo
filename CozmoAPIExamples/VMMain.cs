@@ -315,7 +315,10 @@ namespace CozmoAPIExamples
                         mCleanRoomManager = null;
                     }
                     break;
-                case "Click":
+                case "DriveInCircle":
+                    mConnection.MoveArc(100f, Utilities.FeetToMM(1)).Wait();
+                    break;
+                case "PrecisionParking":
                     PrecisionParking();
                     break;
                 case "Patrol":
@@ -384,7 +387,7 @@ namespace CozmoAPIExamples
         // Also introduced is the CalculateOffsetPosition method which given a distance
         // will calculate the X & Y coordinates of the robot.
         // using these two methods we can get the robot to line up with any cube
-        // it spots -- this function will always part the Robot perpedicular 
+        // it spots -- this function will always put the Robot perpedicular 
         // to the Cube's face 100 MM in front.
         // if you change the -100f to 100f your robot will move in front of the cube
         // by 100 MM and park directly in front of it.

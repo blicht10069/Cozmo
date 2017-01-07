@@ -71,6 +71,7 @@
     <Compile Include="MessageObjects\ActionAlignWithObject.cs" />
     <Compile Include="MessageObjects\ActionCalibrateMotors.cs" />
     <Compile Include="MessageObjects\ActionDisplayFaceImage.cs" />
+    <Compile Include="MessageObjects\ActionDriveArc.cs" />
     <Compile Include="MessageObjects\ActionDriveOffChargerContacts.cs" />
     <Compile Include="MessageObjects\ActionDriveStraight.cs" />
     <Compile Include="Enums\ActionEnums.cs" />

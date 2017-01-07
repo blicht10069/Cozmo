@@ -235,6 +235,11 @@ namespace CozmoAPI
             );            
         }
 
+        public CozAsyncResult MoveArc(float speedMMPS = 10f, float radiusMM = 10f)
+        {
+            return ExecuteAction(new ActionDriveArc() { SpeedMMPS = speedMMPS, RadiusMM = radiusMM });
+        }
+
         public CozAsyncResult Turn(float angleInRad, float turnSpeed = 1.57f, float acceleration = 0f, bool isAbsolute = false)
         {
             return ExecuteAction(
@@ -247,6 +252,7 @@ namespace CozmoAPI
                 });
         }
 
+        
         public CozAsyncResult MoveToObject(int objectId, float distanceFromObject = 0f, bool useManualSpeed = false, bool usePreDockPose = false, CozPathMotionProfile motionProfile = null)
         {
             ActionGotoObject action = new ActionGotoObject() 
