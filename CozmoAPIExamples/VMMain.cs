@@ -287,6 +287,8 @@ namespace CozmoAPIExamples
                     mConnection.SetBackpackLightState(BackpackLightID.Left, mIsLightOn ? Color.Red : Color.Black);
                     mConnection.SetBackpackLightState(BackpackLightID.Right, mIsLightOn ? Color.Purple : Color.Black);
                     /*
+                    
+                    // this is a valid alternative to the above, if you want to control all the lights in one call:
                     SetBackpackLED led = new SetBackpackLED();
                     led.SetLightState(BackpackLightID.Top, mIsLightOn ? Color.Blue : Color.Black);
                     led.SetLightState(BackpackLightID.Middle, mIsLightOn ? Color.White: Color.Black);
@@ -316,10 +318,13 @@ namespace CozmoAPIExamples
                     }
                     break;
                 case "DriveInCircle":
-                    mConnection.MoveArc(100f, Utilities.FeetToMM(1)).Wait();
+                    //mConnection.MoveArc(15f, 100f).Wait();
                     break;
                 case "PrecisionParking":
                     PrecisionParking();
+                    break;
+                case "PrecisionDocking":
+                    PrecisionDocking();
                     break;
                 case "Patrol":
                     // this toggles patrol on or off
@@ -413,7 +418,60 @@ namespace CozmoAPIExamples
             mConnection.RobotEvent += spy;
         }
 
-       
+
+        private void PrecisionDocking()
+        {
+            mConnection.SetLiftHeight(0);
+            mConnection.SetHeadAngle(Utilities.ToRadians(10));
+            int stage = 0;
+            bool ignoreMessages = false;
+            Action<RobotEventArgs> removal = null;
+            Action<RobotEventArgs> spy = (e) =>
+            {
+                if (e.EventType == CozEventType.RobotObservedObject)                
+                {
+                    if (ignoreMessages) return;
+                    Console.WriteLine("Stage {0}", stage);
+                    ignoreMessages = true;
+                    if (stage > 2)
+                        mConnection.RobotEvent -= removal;
+                    RobotObservedObject roo = (RobotObservedObject)e.Data;
+                    Console.WriteLine("Found Block {0} at ({1:N2}, {2:N2}, {3:N2}) at {4:N3} degrees",
+                        roo.ObjectID, roo.Pose.X, roo.Pose.Y, roo.Pose.Z, roo.Pose.AngleZ);
+                    mTaskQueue.Push(e2 =>
+                    {
+                        float dist = -100;
+                        switch (stage)
+                        {
+                            case 1:
+                                dist = -80;
+                                break;
+                            case 2:
+                                dist = -70;
+                                break;
+                        }                        
+                        CozPoint pt = roo.Pose.CalculateOffsetPosition(dist);
+                        e2.Stack.Connection.MoveToPosition(pt.X, pt.Y, (float)roo.Pose.AngleZRad).Wait();
+                        stage++;
+                        if (stage > 2)
+                        {
+                            e2.Stack.Connection.Move(25, 110).Wait();
+                            e2.Stack.Connection.SetLiftHeight(150).Wait();
+                            e2.Stack.Connection.MoveToPosition(0f, 0f, Utilities.ToRadians(180)).Wait();
+                            e2.Stack.Connection.SetLiftHeight(0).Wait();
+                            stage = 10000;
+                        }
+                        else
+                        {
+                            e2.Stack.Connection.Move(10f, -40f).Wait();
+                        }
+                        ignoreMessages = false;
+                    });
+                };
+            };
+            removal = spy;
+            mConnection.RobotEvent += spy;
+        }
     }
 
     public enum ActivityMode

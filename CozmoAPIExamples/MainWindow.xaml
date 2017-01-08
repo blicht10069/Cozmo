@@ -34,6 +34,7 @@
             <Button Style="{StaticResource ToolBarItem}" Width="100" Content="Animate Cozmo" Command="{Binding CommandLink}" CommandParameter="Animate" />
             <Button Style="{StaticResource ToolBarItem}" Width="100" Content="Clean Room" Command="{Binding CommandLink}" CommandParameter="CleanRoom" />
             <Button Style="{StaticResource ToolBarItem}" Width="100" Content="Precision Parking" Command="{Binding CommandLink}" CommandParameter="PrecisionParking" />
+            <Button Style="{StaticResource ToolBarItem}" Width="100" Content="Manual Dock w/ block" Command="{Binding CommandLink}" CommandParameter="PrecisionDocking" />
             <Button Style="{StaticResource ToolBarItem}" Width="100" Content="Drive In Circle" Command="{Binding CommandLink}" CommandParameter="DriveInCircle" />
         </WrapPanel>
         <StackPanel Height="20" Background="Silver" DockPanel.Dock="Bottom" >

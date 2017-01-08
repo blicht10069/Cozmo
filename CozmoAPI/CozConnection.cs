@@ -42,19 +42,45 @@ namespace CozmoAPI
         public CozConnection(string adbLocation = @"E:\cozmo\platform-tools\", int cozmoSDKPort = 5106)
             : this()
         {
-            if (!adbLocation.EndsWith("\\")) adbLocation = adbLocation + "\\";
+            if (!adbLocation.EndsWith("\\")) adbLocation = adbLocation + "\\";            
             mImageStreamManager = new ImageStreamManager();
             Output = TextWriter.Null;
             mAdbPath = adbLocation;
             mAdbExe = mAdbPath + "adb.exe";
             if (!File.Exists(mAdbExe))
-                throw new ArgumentException("Could not find adb.exe on the path supplied: " + adbLocation);
+            {
+                string searchPath = TryToFindAdb();
+                if (searchPath == null)
+                    throw new ArgumentException("Could not find adb.exe on the path supplied: " + adbLocation);
+                else
+                {
+                    mAdbPath = searchPath;
+                    mAdbExe = mAdbPath + "adb.exe";
+                    Console.WriteLine("Found connection here {0}", mAdbExe);
+                }                
+            }
             mCozmoSDKPort = cozmoSDKPort;
             mReader = new Thread(RunReader);
             mReader.IsBackground = true;
             mReader.Start();            
         }
 
+        private string TryToFindAdb()
+        {
+            string ret = null;
+            string[] paths = Environment.GetEnvironmentVariable("path").Split(';');
+            foreach (string path in paths)
+            {
+                string temp = path;
+                if (!temp.EndsWith("\\")) temp += "\\";
+                if (File.Exists(temp + "adb.exe"))
+                {
+                    ret = temp;
+                    break;
+                }
+            }
+            return ret;
+        }
         protected Socket Socket
         {
             get
@@ -286,6 +312,12 @@ namespace CozmoAPI
             };
             if (motionProfile != null) action.MotionProfile = motionProfile;
             return ExecuteAction(action);
+        }
+
+        public CozAsyncResult MoveToPositionNoAngle(float x, float y, byte level = 0, bool useManualSpeed = false, CozPathMotionProfile motionProfile = null)
+        {
+            float angleInRadians = (float)Math.Atan(y / x);
+            return MoveToPosition(x, y, angleInRadians, level, useManualSpeed, motionProfile);
         }
 
         public CozAsyncResult SetHeadAngle(float angleInRad, float speed = ActionSetHeadAngle.DEF_SPEED, float acceleration = 0f, float durationInSeconds = 0)
