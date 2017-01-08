@@ -34,6 +34,7 @@ namespace CozmoAPI
         private SingleAction mLastAction = null;
         private CozConnection mUltimateSource = null;
         private CozPathMotionProfile mDefaultMotionProfile = null;
+        private HashSet<CozEventWait> mWaits = new HashSet<CozEventWait>();
 
         protected CozConnection()
         {
@@ -480,7 +481,45 @@ namespace CozmoAPI
         {
             ExecuteCommand(new ImageRequest() { Mode = mode });
         }
-        
+
+        public CozEventWait CreateWait(params CozEventType[] events)
+        {
+            return CreateWait(new CozEventWaitSetup(events));
+        }        
+
+        public CozEventWait CreateWait(CozEventWaitSetup setup)
+        {
+            CozEventWait ret;
+            if (mIsNullConnection)
+            {
+                ret = CozEventWait.CreateNullWait(this, setup);
+            }
+            else
+            {
+                ret = new CozEventWait(this, setup);
+                lock (mWaits)
+                {
+                    mWaits.Add(ret);
+                }
+            }
+            return ret;
+        }
+
+        public void RemoveWait(CozEventWait wait)
+        {
+            lock (mWaits)
+            {
+                mWaits.Remove(wait);
+            }
+        }
+
+        public void AbortAllWaits()
+        {
+            CozEventWait[] waits = mWaits.ToArray();
+            foreach (CozEventWait wait in waits)
+                if (!wait.IsComplete) wait.Abort();
+        }
+
         public CozAsyncResult ExecuteAction(IRobotActionUnion action, byte numberOfRetries = 0)
         {
             SingleAction ret = CreateQueueSingleAction();

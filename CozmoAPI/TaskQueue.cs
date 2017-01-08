@@ -75,6 +75,7 @@ namespace CozmoAPI
                 IsAborted = true;
                 if (!mSourceConnection.LastAction.Result.IsComplete)
                     mSourceConnection.AbortByIdTag(mSourceConnection.LastAction.QueueSingleAction.IdTag);
+                mSourceConnection.AbortAllWaits();
             }
         }
 

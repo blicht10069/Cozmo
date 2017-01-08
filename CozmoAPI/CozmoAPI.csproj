@@ -47,6 +47,7 @@
     <Compile Include="CozDataStructures\CozPoint.cs" />
     <Compile Include="CozDataStructures\CozPose3D.cs" />
     <Compile Include="CozDataStructures\CozRect.cs" />
+    <Compile Include="CozEventWait.cs" />
     <Compile Include="Enums\CozAnimationTriggerType.cs" />
     <Compile Include="Enums\BackpackLightID.cs" />
     <Compile Include="Enums\CozAlignmentType.cs" />

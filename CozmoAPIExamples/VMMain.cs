@@ -423,54 +423,51 @@ namespace CozmoAPIExamples
         {
             mConnection.SetLiftHeight(0);
             mConnection.SetHeadAngle(Utilities.ToRadians(10));
-            int stage = 0;
-            bool ignoreMessages = false;
-            Action<RobotEventArgs> removal = null;
-            Action<RobotEventArgs> spy = (e) =>
-            {
-                if (e.EventType == CozEventType.RobotObservedObject)                
-                {
-                    if (ignoreMessages) return;
-                    Console.WriteLine("Stage {0}", stage);
-                    ignoreMessages = true;
-                    if (stage > 2)
-                        mConnection.RobotEvent -= removal;
-                    RobotObservedObject roo = (RobotObservedObject)e.Data;
-                    Console.WriteLine("Found Block {0} at ({1:N2}, {2:N2}, {3:N2}) at {4:N3} degrees",
-                        roo.ObjectID, roo.Pose.X, roo.Pose.Y, roo.Pose.Z, roo.Pose.AngleZ);
-                    mTaskQueue.Push(e2 =>
+
+            CozEventWaitSetup waitSetup = new CozEventWaitSetup(CozEventType.RobotObservedObject);
+            mTaskQueue.Push(tq =>
+                {                    
+                    while (true)
                     {
-                        float dist = -100;
-                        switch (stage)
-                        {
-                            case 1:
-                                dist = -80;
-                                break;
-                            case 2:
-                                dist = -70;
-                                break;
-                        }                        
-                        CozPoint pt = roo.Pose.CalculateOffsetPosition(dist);
-                        e2.Stack.Connection.MoveToPosition(pt.X, pt.Y, (float)roo.Pose.AngleZRad).Wait();
-                        stage++;
-                        if (stage > 2)
-                        {
-                            e2.Stack.Connection.Move(25, 110).Wait();
-                            e2.Stack.Connection.SetLiftHeight(150).Wait();
-                            e2.Stack.Connection.MoveToPosition(0f, 0f, Utilities.ToRadians(180)).Wait();
-                            e2.Stack.Connection.SetLiftHeight(0).Wait();
-                            stage = 10000;
-                        }
+                        // wait until we see an object
+                        CozEventWait e2 = tq.Stack.Connection.CreateWait(CozEventType.RobotObservedObject).Wait(); 
+
+                        // line up roughly in line with the object
+                        RobotObservedObject roo = (RobotObservedObject)e2.Result.Data;
+                        Console.WriteLine("Found Block {0} at ({1:N2}, {2:N2}, {3:N2}) at {4:N3} degrees",
+                            roo.ObjectID, roo.Pose.X, roo.Pose.Y, roo.Pose.Z, roo.Pose.AngleZ);
+                        CozPoint pt = roo.Pose.CalculateOffsetPosition(-100);
+                        tq.Stack.Connection.MoveToPosition(pt.X, pt.Y, (float)roo.Pose.AngleZRad).Wait();
+
+                        // now that we are close and roughly in line with the object
+                        // make final approach adjustments 
+                        tq.Stack.Connection.Move(25f, -40).Wait();
+                        CozEventWait ew = tq.Stack.Connection.CreateWait(CozEventType.RobotObservedObject).Wait();
+                        roo = (RobotObservedObject)ew.Result.Data;
+                        pt = roo.Pose.CalculateOffsetPosition(-80);
+                        tq.Stack.Connection.MoveToPosition(pt.X, pt.Y, (float)roo.Pose.AngleZRad).Wait();
+
+                        // push forward "thru" the cube, and then try to lift it up
+                        tq.Stack.Connection.Move(40, 110).Wait();                        
+                        tq.Stack.Connection.SetLiftHeight(150).Wait();
+                        tq.Stack.Connection.Move(50f, -70).Wait();
+
+                        // Verify we got the cube and take approrpiate action
+                        if (tq.Stack.Connection.CreateWait(CozEventType.RobotObservedObject).Wait(TimeSpan.FromSeconds(2)).Result == null)
+                            break;
                         else
                         {
-                            e2.Stack.Connection.Move(10f, -40f).Wait();
+                            // we failed to pickup block -- move back and try again
+                            tq.Stack.Connection.Move(20f, -30).Wait();
+                            tq.Stack.Connection.SetLiftHeight(0).Wait();
                         }
-                        ignoreMessages = false;
-                    });
-                };
-            };
-            removal = spy;
-            mConnection.RobotEvent += spy;
+                    }
+
+                    // bring cube home and drop
+                    tq.Stack.Connection.MoveToPosition(0f, 0f, Utilities.ToRadians(180)).Wait();
+                    tq.Stack.Connection.SetLiftHeight(0).Wait();
+                }
+                );            
         }
     }
 
