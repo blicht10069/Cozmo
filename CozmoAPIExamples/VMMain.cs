@@ -322,7 +322,7 @@ namespace CozmoAPIExamples
                         {
                             DriveWheels wheel = DriveWheels.Configure(ArchType.Left, Utilities.InchesToMM(6), 5f);
                             tq.Stack.Connection.ExecuteCommand(wheel);
-                            Thread.Sleep(4000); // it takes one second to issue the next command
+                            Thread.Sleep(5000); // The calculation is not quite right, yet
                             tq.Stack.Connection.StopAllMotors();
                         });
                     break;

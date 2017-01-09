@@ -19,7 +19,7 @@ namespace CozmoAPI.MessageObjects
         {
             float circleSize = (float)(Math.PI * 2 * radius);
             float outsideWheel = circleSize / timeToTravelFullCircleInSeconds;
-            float insideWheel = WHEEL_SPAN_MM / radius * outsideWheel;
+            float insideWheel = (float)((Math.PI * 2 * (radius - WHEEL_SPAN_MM)) / timeToTravelFullCircleInSeconds);
             DriveWheels ret = new DriveWheels();
             ret.LeftWheelMMPS = archType == ArchType.Left ? outsideWheel : insideWheel;
             ret.RightWheelMMPS = archType == ArchType.Left ? insideWheel : outsideWheel;
