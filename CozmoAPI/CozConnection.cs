@@ -267,14 +267,14 @@ namespace CozmoAPI
             return ExecuteAction(new ActionDriveArc() { SpeedMMPS = speedMMPS, RadiusMM = radiusMM });
         }
 
-        public CozAsyncResult MoveWheels(float leftWheelMMPS, float rightWheelMMPS, float leftWheelAccelMMPS2 = 0f, float rightWheelMMPS2 = 0f)
+        public void MoveWheels(float leftWheelMMPS, float rightWheelMMPS, float leftWheelAccelMMPS2 = 0f, float rightWheelMMPS2 = 0f)
         {
-            return ExecuteAction(new ActionDriveWheels()
+            ExecuteCommand(new DriveWheels()
             {
                 LeftWheelMMPS = leftWheelAccelMMPS2,
                 RightWheelMMPS = rightWheelMMPS,
                 LeftWheelAccelMMPS2 = leftWheelAccelMMPS2,
-                RightWheelAccelMMPS2 = rightWheelMMPS2
+                RightWheelAccelMMPS2 = rightWheelMMPS
             });
         }
 

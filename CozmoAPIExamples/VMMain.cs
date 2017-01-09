@@ -318,7 +318,13 @@ namespace CozmoAPIExamples
                     }
                     break;
                 case "DriveInCircle":
-                    //mConnection.MoveArc(15f, 100f).Wait();
+                    mTaskQueue.Push(tq =>
+                        {
+                            DriveWheels wheel = DriveWheels.Configure(ArchType.Left, Utilities.InchesToMM(6), 5f);
+                            tq.Stack.Connection.ExecuteCommand(wheel);
+                            Thread.Sleep(4000); // it takes one second to issue the next command
+                            tq.Stack.Connection.StopAllMotors();
+                        });
                     break;
                 case "PrecisionParking":
                     PrecisionParking();

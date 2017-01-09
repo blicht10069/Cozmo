@@ -77,7 +77,7 @@
     <Compile Include="MessageObjects\ActionDriveOffChargerContacts.cs" />
     <Compile Include="MessageObjects\ActionDriveStraight.cs" />
     <Compile Include="Enums\ActionEnums.cs" />
-    <Compile Include="MessageObjects\ActionDriveWheels.cs" />
+    <Compile Include="MessageObjects\DriveWheels.cs" />
     <Compile Include="MessageObjects\ActionEnrollNamedFace.cs" />
     <Compile Include="MessageObjects\ActionFlipBlock.cs" />
     <Compile Include="MessageObjects\ActionGotoObject.cs" />
