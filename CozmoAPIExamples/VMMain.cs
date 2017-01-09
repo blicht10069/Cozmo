@@ -320,7 +320,7 @@ namespace CozmoAPIExamples
                 case "DriveInCircle":
                     mTaskQueue.Push(tq =>
                         {
-                            DriveWheels wheel = DriveWheels.Configure(ArchType.Left, Utilities.InchesToMM(6), 5f);
+                            DriveWheels wheel = DriveWheels.Configure(ArchType.Clockwise, Utilities.InchesToMM(6), 5f);
                             tq.Stack.Connection.ExecuteCommand(wheel);
                             Thread.Sleep(5000); // The calculation is not quite right, yet
                             tq.Stack.Connection.StopAllMotors();

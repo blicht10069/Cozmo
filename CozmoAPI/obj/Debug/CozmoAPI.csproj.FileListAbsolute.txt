@@ -2,4 +2,3 @@ e:\Programming\DotNet2010\Cozmo\CozmoAPI\bin\Debug\CozmoAPI.dll
 e:\Programming\DotNet2010\Cozmo\CozmoAPI\bin\Debug\CozmoAPI.pdb
 e:\Programming\DotNet2010\Cozmo\CozmoAPI\obj\Debug\CozmoAPI.dll
 e:\Programming\DotNet2010\Cozmo\CozmoAPI\obj\Debug\CozmoAPI.pdb
-e:\Programming\DotNet2010\Cozmo\CozmoAPI\obj\Debug\CozmoAPI.csprojResolveAssemblyReference.cache

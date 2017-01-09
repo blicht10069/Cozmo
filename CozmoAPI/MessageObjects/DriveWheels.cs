@@ -21,8 +21,8 @@ namespace CozmoAPI.MessageObjects
             float outsideWheel = circleSize / timeToTravelFullCircleInSeconds;
             float insideWheel = (float)((Math.PI * 2 * (radius - WHEEL_SPAN_MM)) / timeToTravelFullCircleInSeconds);
             DriveWheels ret = new DriveWheels();
-            ret.LeftWheelMMPS = archType == ArchType.Left ? outsideWheel : insideWheel;
-            ret.RightWheelMMPS = archType == ArchType.Left ? insideWheel : outsideWheel;
+            ret.LeftWheelMMPS = archType == ArchType.Clockwise ? outsideWheel : insideWheel;
+            ret.RightWheelMMPS = archType == ArchType.Clockwise ? insideWheel : outsideWheel;
             ret.LeftWheelAccelMMPS2 = ret.LeftWheelMMPS;
             ret.RightWheelAccelMMPS2 = ret.RightWheelMMPS;
             return ret;
@@ -59,7 +59,7 @@ namespace CozmoAPI.MessageObjects
 
     public enum ArchType
     {
-        Left,
-        Right
+        Clockwise,
+        CounterClockwise
     }
 }
