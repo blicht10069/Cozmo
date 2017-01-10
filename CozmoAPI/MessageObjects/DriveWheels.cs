@@ -9,7 +9,7 @@ namespace CozmoAPI.MessageObjects
     [CozFunction(CozMessageType.DriveWheels)]
     public class DriveWheels 
     {
-        public const float WHEEL_SPAN_MM = 40f;
+        public const float WHEEL_SPAN_MM = 2*45f;
 
         public DriveWheels()
         {

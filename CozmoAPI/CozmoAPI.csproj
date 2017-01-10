@@ -67,6 +67,7 @@
     <Compile Include="EventObjects\RobotObservedFace.cs" />
     <Compile Include="EventObjects\RobotObservedObject.cs" />
     <Compile Include="EventObjects\RobotObservedPossibleObject.cs" />
+    <Compile Include="EventObjects\RobotState.cs" />
     <Compile Include="ImageStreamManager.cs" />
     <Compile Include="Int32Container.cs" />
     <Compile Include="MessageObjects\AbortAction.cs" />

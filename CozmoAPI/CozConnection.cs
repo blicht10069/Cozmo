@@ -617,11 +617,16 @@ namespace CozmoAPI
                     {
                         case CozEventType.EngineErrorCodeMessage:
                         case CozEventType.DebugString:
-                        case CozEventType.RobotProcessedImage:
-                        case CozEventType.RobotState:
+                        case CozEventType.RobotProcessedImage:                        
                         case CozEventType.Ping:
                         case CozEventType.MoodState:
                         case CozEventType.RobotObservedMotion:
+                            break;
+                        case CozEventType.RobotState:
+                            RobotState rs = (RobotState)result;
+                            Debug.WriteLine(rs);
+                            
+                            //Console.WriteLine("{0:HH:mm:ss} X={1:N1} Y={2:N2} Angle={3:N2}", DateTime.Now, rs.Pose.X, rs.Pose.Z, Utilities.ToDegrees(rs.Pose.AngleRad));
                             break;
                         default:
                             Output.WriteLine((CozEventType)buf[0]);
