@@ -320,9 +320,21 @@ namespace CozmoAPIExamples
                 case "DriveInCircle":
                     mTaskQueue.Push(tq =>
                         {
-                            DriveWheels wheel = DriveWheels.Configure(ArchType.Clockwise, Utilities.InchesToMM(6), 5f);
+                            DriveWheels wheel = DriveWheels.Configure(ArchType.Clockwise, Utilities.InchesToMM(12), 5f);
                             tq.Stack.Connection.ExecuteCommand(wheel);
-                            Thread.Sleep(5000); // The calculation is not quite right, yet
+                            
+                            /*
+                            double max = 360;
+                            if (Utilities.ToDegrees(start.AngleRad) == 0)
+                            {
+                                WaitUntilAngle(tq.Stack.Connection, 10, 306, 3);
+                                max = 10;
+                            }
+                             */
+                            RobotState start = tq.Stack.Connection.GetRobotState();
+                            Thread.Sleep(1000);
+                            RobotState end = tq.Stack.Connection.GetRobotState();
+                            WaitUntilAngle(tq.Stack.Connection, Utilities.ToDegrees(start.AngleRad), Utilities.ToDegrees(end.AngleRad));
                             tq.Stack.Connection.StopAllMotors();
                         });
                     break;
@@ -369,6 +381,27 @@ namespace CozmoAPIExamples
             
         }
 
+        private void WaitUntilAngle(CozConnection connection, double theta, double end = 360, double timeOut = 20d)
+        {
+            DateTime endTime = DateTime.Now.AddSeconds(timeOut);
+            while (theta < 0) theta += 360;
+            while (end < 0) end += 360;
+            if (theta > end)
+            {
+                double temp = end;
+                end = theta;
+                theta = temp;
+            }
+            while (endTime > DateTime.Now)
+            {
+                connection.CreateWait(CozEventType.RobotState).Wait();
+                double rangle = Utilities.ToDegrees(connection.GetRobotState().AngleRad);
+                while (rangle < 0) rangle += 360;
+                while (rangle > 360) rangle -= 360;
+                Console.WriteLine("{0:N2} ({1:N2} - {2:N2})", rangle, theta, end);
+                if (rangle >= theta && rangle <= end) break;
+            }
+        }
         private void OnPatrolEvent(RobotEventArgs e)
         {
             if (e.EventType == CozEventType.RobotObservedObject)

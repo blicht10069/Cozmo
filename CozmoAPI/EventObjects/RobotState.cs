@@ -3,68 +3,73 @@ using System.Collections.Generic;
 using System.Diagnostics;
 using System.Linq;
 using System.Text;
+using CozmoAPI.CozDataStructures;
 
 namespace CozmoAPI.EventObjects
 {
     [DebuggerDisplay("Robot Event=( PostFrameID={PoseFrameID} PostOriginID={PostOriginID} {Pose} LeftWheelSpeedMMPS={LeftWheelSpeedMMPS}\r\n\tRightWheelSpeedMMPS={RightWheelSpeedMMPS} HeadAngle={HeadAngle} LiftAngle={LiftAngle} {Acceleration} Gyro{Gyro} BatteryVoltage={BatteryVoltage} Status={Status}")]
-    [CozFunction(0x26, IsEvent=true)]
+    [CozFunction(0x26, IsEvent = true)]
     public class RobotState
     {
+        public static readonly RobotState Empty = new RobotState();
         public RobotState()
         {
+            Pose = new CozPose3D();
+            Acceleration = new AccelData();
+            Gyro = new AccelData();
         }
 
         [CozParameter(0)]
-        public int Timestamp
+        public CozPose3D Pose
         {
             get;
             set;
         }
 
         [CozParameter(1)]
-        public int PoseFrameID
+        public float AngleRad
         {
             get;
             set;
         }
 
         [CozParameter(2)]
-        public int PostOriginID
+        public float PitchRad
         {
             get;
             set;
         }
 
         [CozParameter(3)]
-        public RobotPose Pose
+        public float LeftWheelMMPS
         {
             get;
             set;
         }
 
         [CozParameter(4)]
-        public float LeftWheelSpeedMMPS
+        public float RightWheelMMPS
         {
             get;
             set;
         }
 
         [CozParameter(5)]
-        public float RightWheelSpeedMMPS
+        public float HeadAngleRad
         {
             get;
             set;
         }
 
         [CozParameter(6)]
-        public float HeadAngle
+        public float LiftHeightMM
         {
             get;
             set;
         }
 
         [CozParameter(7)]
-        public float LiftAngle
+        public float BatteryVoltage
         {
             get;
             set;
@@ -85,46 +90,61 @@ namespace CozmoAPI.EventObjects
         }
 
         [CozParameter(10)]
-        public float BatteryVoltage
+        public int CarryingObjectID
         {
             get;
             set;
         }
 
         [CozParameter(11)]
-        public int Status
+        public int CarryingObjectOnTopID
         {
             get;
             set;
         }
 
         [CozParameter(12)]
-        public short LastPathID
+        public int HeadTrackingObjectID
         {
             get;
             set;
         }
 
         [CozParameter(13)]
-        public short CliffDataRaw
+        public int LocalizedToObjectID
         {
             get;
             set;
         }
 
         [CozParameter(14)]
-        public byte CurrentPathSegment
+        public int LastImageTimestamp
         {
             get;
             set;
         }
 
         [CozParameter(15)]
-        public byte NumberOfFreeSegmentSlots
+        public int Status
         {
             get;
             set;
         }
+
+        [CozParameter(16)]
+        public byte GameStatus
+        {
+            get;
+            set;
+        }
+
+        [CozParameter(17)]
+        public byte RobotID
+        {
+            get;
+            set;
+        }
+
         
     }
 

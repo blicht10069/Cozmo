@@ -571,6 +571,15 @@ namespace CozmoAPI
             Connect();
         }
 
+        private RobotState mLastRobotState = RobotState.Empty;
+        public RobotState GetRobotState()
+        {
+            if (mUltimateSource == null)
+                return mLastRobotState;
+            else
+                return mUltimateSource.mLastRobotState;
+        }
+
         private void ExecAdb(string parameters, params object[] data)
         {
             ProcessStartInfo info = new ProcessStartInfo(mAdbExe);
@@ -623,10 +632,7 @@ namespace CozmoAPI
                         case CozEventType.RobotObservedMotion:
                             break;
                         case CozEventType.RobotState:
-                            RobotState rs = (RobotState)result;
-                            Debug.WriteLine(rs);
-                            
-                            //Console.WriteLine("{0:HH:mm:ss} X={1:N1} Y={2:N2} Angle={3:N2}", DateTime.Now, rs.Pose.X, rs.Pose.Z, Utilities.ToDegrees(rs.Pose.AngleRad));
+                            mLastRobotState = (RobotState)result;
                             break;
                         default:
                             Output.WriteLine((CozEventType)buf[0]);
